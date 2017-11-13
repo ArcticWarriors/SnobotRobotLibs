@@ -3,6 +3,7 @@ package com.snobot.lib.ui;
 public class LatchedButton
 {
     private boolean mLastState;
+    private boolean mCurrentState;
 
     public LatchedButton()
     {
@@ -11,16 +12,21 @@ public class LatchedButton
 
     public boolean update(boolean aCurrentState)
     {
-        boolean output = false;
+        mCurrentState = false;
         if (!mLastState && aCurrentState)
         {
-            output = true;
+            mCurrentState = true;
         }
 
         mLastState = aCurrentState;
 
-        return output;
+        return mCurrentState;
 
+    }
+
+    public boolean getState()
+    {
+        return mCurrentState;
     }
 
 }

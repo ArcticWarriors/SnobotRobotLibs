@@ -1,10 +1,24 @@
 
 apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'eclipse'
 
-repositories.maven {
-    name = "WPI"
-    url = "http://first.wpi.edu/FRC/roborio/maven/release"
-}
+
+def snobotSimVersion = "0.2"
+
+repositories
+{
+    maven {
+        name = "WPI"
+        url = "http://first.wpi.edu/FRC/roborio/maven/release"
+    }
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+    maven {
+        url "http://raw.githubusercontent.com/pjreiniger/maven_repo/master/"
+    }
+ }
 
 sourceSets {
     main {
@@ -12,17 +26,53 @@ sourceSets {
             srcDirs = ["src"]
         }
     }
+    
+    test
+    {
+        java
+        {
+            srcDirs = ["test/unit_tests"]
+        }
+    }
 }
 
 dependencies {
-    //compile 'edu.wpi.first.wpilib.networktables.java:networktables:3.1.7:desktop'
+
     compile 'edu.wpi.first.wpilib.networktables.java:NetworkTables:3.1.7:desktop'
     compile 'edu.wpi.first.wpilibj:athena:2017.3.1'
     compile files('dependencies/RIOdroid.jar')
     
-    //http://first.wpi.edu/FRC/roborio/maven/release/edu/wpi/first/wpilib/networktables/java/
-    //http://first.wpi.edu/FRC/roborio/maven/release/edu/wpi/first/wpilib/networktables/java/networktables/3.1.7/networktables-3.1.7-desktop.jar
+    // Testing
+    testCompile 'junit:junit:4.12'
+    testRuntime 'log4j:log4j:1.2.16'
+    testCompile 'com.snobot.simulator:snobot_sim_gui:'  + snobotSimVersion + ':all'
+    testCompile 'com.snobot.simulator:snobot_sim_java:' + snobotSimVersion + ':uber_native-linux'
+    testCompile 'com.snobot.simulator:snobot_sim_java:' + snobotSimVersion + ':uber_native-windows'
+}
+
+test {
+	ignoreFailures = true
+}
+
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
     
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it,  exclude: 
+                [
+                'com/team254/lib/trajectory/**',
+                'com/snobot/lib/motion_profile/**',
+                'com/snobot/lib/vision/**',
+                'com/snobot/lib/external_connection/**',
+                'com/snobot/lib/adb/**',
+                ])
+        })
+    }
 }
 
 
