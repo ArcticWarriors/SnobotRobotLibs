@@ -7,16 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.WaitCommand;
-import edu.wpi.first.wpilibj.tables.ITable;
 
 public abstract class ACommandParser
 {
-    protected final ITable mAutonTable;
-    protected final String mAutonSdCommandTextName;
-    protected final String mAutonSdCommandParsedTextName;
+    protected final NetworkTableEntry mAutonSdTableTextName;
+    protected final NetworkTableEntry mAutonSdTableParsedTextName;
 
     protected final String mDelimiter;
     protected final String mCommentStart;
@@ -25,13 +24,11 @@ public abstract class ACommandParser
     protected boolean mSuccess;
 
     public ACommandParser(
-            ITable aAutonTable,
-            String aAutonSdCommandTextName, String aAutonSdCommandParsedTextName,
+            NetworkTableEntry aAutonSdTableTextName, NetworkTableEntry aAutonSdTableParsedTextName,
             String aDelimiter, String aCommentStart)
     {
-        mAutonTable = aAutonTable;
-        mAutonSdCommandTextName = aAutonSdCommandTextName;
-        mAutonSdCommandParsedTextName = aAutonSdCommandParsedTextName;
+        mAutonSdTableTextName = aAutonSdTableTextName;
+        mAutonSdTableParsedTextName = aAutonSdTableParsedTextName;
         mDelimiter = aDelimiter;
         mCommentStart = aCommentStart;
 
@@ -203,8 +200,8 @@ public abstract class ACommandParser
             aCommandString += mErrorText;
         }
 
-        mAutonTable.putString(mAutonSdCommandTextName, aCommandString);
-        mAutonTable.putBoolean(mAutonSdCommandParsedTextName, mSuccess);
+        mAutonSdTableTextName.setString(aCommandString);
+        mAutonSdTableParsedTextName.setBoolean(mSuccess);
     }
 
     protected abstract Command parseCommand(List<String> args);
