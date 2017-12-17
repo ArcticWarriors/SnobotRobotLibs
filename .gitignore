@@ -4,3 +4,13 @@
 
 /temp
 *RobotLog*.csv
+
+# Eclipse projects
+.settings/
+.project
+.classpath
+
+# Intellij Projects
+*.iml
+*.ipr
+*.iws
