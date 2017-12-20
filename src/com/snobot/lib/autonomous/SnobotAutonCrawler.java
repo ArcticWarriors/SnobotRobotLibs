@@ -11,8 +11,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-
 public final class SnobotAutonCrawler extends SimpleFileVisitor<Path>
 {
     private List<Path> mPaths;
@@ -53,13 +51,14 @@ public final class SnobotAutonCrawler extends SimpleFileVisitor<Path>
      * This is just part of the auton crawler wee lifted from last year. It
      * makes a chooser out of all the files in a specified folder.
      */
-    public SendableChooser<File> loadAutonFiles(String aDir)
+    public ObservableSendableChooser<File> loadAutonFiles(String aDir)
     {
         return loadAutonFiles(aDir, null);
     }
-    public SendableChooser<File> loadAutonFiles(String aDir, String aDefaultName)
+
+    public ObservableSendableChooser<File> loadAutonFiles(String aDir, String aDefaultName)
     {
-        SendableChooser<File> output = new SendableChooser<>();
+        ObservableSendableChooser<File> output = new ObservableSendableChooser<>();
         File autonDr = new File(aDir);
 
         if (autonDr.exists())
