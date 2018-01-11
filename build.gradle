@@ -1,22 +1,31 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+}
 
 plugins {
     id "java"
     id "eclipse"
     id "idea"
     id "jacoco"
-    id "jaci.openrio.gradle.GradleRIO" version "2018-beta-2f"
+    id "jaci.openrio.gradle.GradleRIO" version "2018.01.07"
+    id "com.snobot.simulator.plugin.SnobotSimulatorPlugin" version "2018.01.10"
 }
 
-def snobotSimVersion = "0.2"
+apply plugin: com.snobot.simulator.plugin.SnobotSimulatorPlugin
+snobotSimVersions {
+    snobotSimVersion = "0.7.1"
+}
 
-repositories
-{
-    maven {
-        url "http://raw.githubusercontent.com/pjreiniger/maven_repo/master/"
-    }
-
+repositories {
+    mavenLocal()
     mavenCentral()
- }
+}
 
 sourceSets {
     main {
@@ -37,18 +46,17 @@ sourceSets {
 dependencies {
 
     compile wpilib()
+    compile ctre()
+    
+    // Third Party without maven
     compile files('dependencies/RIOdroid.jar')
+    
+    // Simulator
+    testCompile snobotSimCompile()
+    testCompile snobotSimJavaCompile()
     
     // Testing
     testCompile 'junit:junit:4.12'
-    testRuntime 'log4j:log4j:1.2.16'
-    testCompile 'com.snobot.simulator:snobot_sim_gui:'  + snobotSimVersion + ':all'
-    testCompile 'com.snobot.simulator:snobot_sim_java:' + snobotSimVersion + ':uber_native-linux'
-    testCompile 'com.snobot.simulator:snobot_sim_java:' + snobotSimVersion + ':uber_native-windows'
-    
-    // TODO temp, hopefully
-    testRuntime 'edu.wpi.first.ntcore:ntcore-jni:+:all'
-    testRuntime 'edu.wpi.first.cscore:cscore-jni:+:all'
 }
 
 test {
