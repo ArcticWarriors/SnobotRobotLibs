@@ -1,11 +1,11 @@
 package com.snobot.lib.adb;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 public abstract class BaseAdbBridge implements IAdbBridge
 {
-    protected static final Logger sLOGGER = Logger.getLogger("AdbBridge");
+    protected static final Logger sLOGGER = Logger.getLogger(BaseAdbBridge.class);
 
     protected final String mAppPackage;
     protected final String mAppActivity;

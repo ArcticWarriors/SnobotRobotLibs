@@ -3,8 +3,9 @@ package com.snobot.lib.motion_profile.trajectory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  * Serializes a 2D cubic spline into a string, to be used by the SmartDashboard.
@@ -109,7 +110,7 @@ public final class IdealSplineSerializer
         }
         catch (Exception ex)
         {
-            sLOGGER.log(Level.SEVERE, "", ex);
+            sLOGGER.log(Level.ERROR, "", ex);
         }
 
         return point;

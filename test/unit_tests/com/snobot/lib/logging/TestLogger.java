@@ -2,8 +2,6 @@ package com.snobot.lib.logging;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
 
 import org.junit.Test;
 
@@ -54,13 +52,5 @@ public class TestLogger
         logger.endRow();
         logger.flush();
         logger.stop();
-
-    }
-
-    @Test
-    public void testJavaLogger()
-    {
-        LogManager.getLogManager().getLogger("").getHandlers()[0].setFormatter(new LogFormatter());
-        java.util.logging.Logger.getGlobal().log(Level.INFO, "Test");
     }
 }

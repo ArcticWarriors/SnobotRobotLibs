@@ -1,7 +1,6 @@
 package com.snobot.lib.adb;
 
-import java.util.logging.Level;
-
+import org.apache.log4j.Level;
 import org.spectrum3847.RIOdroid.RIOdroid;
 
 public class RioDroidAdbBridge extends BaseAdbBridge
@@ -26,7 +25,7 @@ public class RioDroidAdbBridge extends BaseAdbBridge
         }
         catch (Exception ex)
         {
-            sLOGGER.log(Level.WARNING, "Could not run command: " + command, ex);
+            sLOGGER.log(Level.WARN, "Could not run command: " + command, ex);
         }
 
         return success;

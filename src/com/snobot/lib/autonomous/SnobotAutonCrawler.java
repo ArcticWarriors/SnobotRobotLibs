@@ -10,8 +10,9 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 public final class SnobotAutonCrawler extends SimpleFileVisitor<Path>
 {
@@ -29,7 +30,7 @@ public final class SnobotAutonCrawler extends SimpleFileVisitor<Path>
     @Override
     public FileVisitResult visitFile(Path aFile, BasicFileAttributes aAttrs) throws IOException
     {
-        sLOGGER.log(Level.FINE, "  Keeping file " + aFile);
+        sLOGGER.log(Level.DEBUG, "  Keeping file " + aFile);
         mPaths.add(aFile);
 
         return FileVisitResult.CONTINUE;
@@ -39,7 +40,7 @@ public final class SnobotAutonCrawler extends SimpleFileVisitor<Path>
     public FileVisitResult preVisitDirectory(Path aDir, BasicFileAttributes aAttrs) throws IOException
     {
         Path dirName = aDir.getFileName();
-        if (dirName.startsWith(mIgnoreString))
+        if (dirName != null && dirName.startsWith(mIgnoreString))
         {
             sLOGGER.log(Level.INFO, " Skipping directory: " + dirName);
             return FileVisitResult.SKIP_SUBTREE;
@@ -87,25 +88,31 @@ public final class SnobotAutonCrawler extends SimpleFileVisitor<Path>
                 boolean isFirst = true;
                 for (Path p : mPaths)
                 {
-                    if ((isFirst && aDefaultName == null) || p.getFileName().toString().equals(aDefaultName))
+                    Path filename = p.getFileName();
+                    if (filename == null)
                     {
-                        output.addDefault(p.getFileName().toString(), p.toFile());
+                        continue;
+                    }
+
+                    if ((isFirst && aDefaultName == null) || filename.toString().equals(aDefaultName))
+                    {
+                        output.addDefault(filename.toString(), p.toFile());
                         isFirst = false;
                     }
                     else
                     {
-                        output.addObject(p.getFileName().toString(), p.toFile());
+                        output.addObject(filename.toString(), p.toFile());
                     }
                 }
             }
             catch (IOException ex)
             {
-                sLOGGER.log(Level.SEVERE, "", ex);
+                sLOGGER.log(Level.ERROR, "", ex);
             }
         }
         else
         {
-            sLOGGER.log(Level.SEVERE, "Auton directory " + aDir + " does not exist!");
+            sLOGGER.log(Level.ERROR, "Auton directory " + aDir + " does not exist!");
         }
 
         return output;

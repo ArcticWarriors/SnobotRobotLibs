@@ -5,8 +5,9 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 public class MjpgServer
 {
@@ -14,7 +15,7 @@ public class MjpgServer
     private static final String K_BOUNDARY = "boundary";
     private static final int sDEFAULT_PORT = 5800;
 
-    private static MjpgServer sInst = null;
+    private static volatile MjpgServer sInst = null;
 
     private final ArrayList<Connection> mConnections = new ArrayList<>();
     private final Object mLock = new Object();
@@ -74,7 +75,7 @@ public class MjpgServer
             }
             catch (IOException ex)
             {
-                sLOGGER.log(Level.SEVERE, "", ex);
+                sLOGGER.log(Level.ERROR, "", ex);
             }
         }
 
@@ -123,7 +124,7 @@ public class MjpgServer
         }
         catch (IOException ex)
         {
-            sLOGGER.log(Level.SEVERE, "", ex);
+            sLOGGER.log(Level.ERROR, "", ex);
         }
         finally
         {
@@ -168,7 +169,7 @@ public class MjpgServer
             }
             catch (Exception ex)
             {
-                sLOGGER.log(Level.SEVERE, "", ex);
+                sLOGGER.log(Level.ERROR, "", ex);
             }
         }
     }
@@ -195,7 +196,7 @@ public class MjpgServer
                 }
                 catch (IOException ex)
                 {
-                    sLOGGER.log(Level.SEVERE, "", ex);
+                    sLOGGER.log(Level.ERROR, "", ex);
                 }
             }
         }

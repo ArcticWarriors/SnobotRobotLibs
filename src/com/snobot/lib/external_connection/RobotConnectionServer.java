@@ -7,8 +7,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 public abstract class RobotConnectionServer
 {
@@ -41,7 +42,7 @@ public abstract class RobotConnectionServer
         }
         catch (IOException ex)
         {
-            sLOGGER.log(Level.SEVERE, "", ex);
+            sLOGGER.log(Level.ERROR, "", ex);
         }
     }
 
@@ -81,7 +82,7 @@ public abstract class RobotConnectionServer
                 }
                 catch (IOException ex)
                 {
-                    sLOGGER.log(Level.SEVERE, "Could not send data to socket", ex);
+                    sLOGGER.log(Level.ERROR, "Could not send data to socket", ex);
                 }
             }
         }
@@ -130,7 +131,7 @@ public abstract class RobotConnectionServer
             }
             catch (IOException ex)
             {
-                sLOGGER.log(Level.SEVERE, "Could not close socket", ex);
+                sLOGGER.log(Level.ERROR, "Could not close socket", ex);
             }
         }
     }
@@ -154,7 +155,7 @@ public abstract class RobotConnectionServer
                 }
                 catch (IOException ex)
                 {
-                    sLOGGER.log(Level.SEVERE, "Issue accepting incoming sockets", ex);
+                    sLOGGER.log(Level.ERROR, "Issue accepting incoming sockets", ex);
                 }
                 finally
                 {
@@ -164,7 +165,7 @@ public abstract class RobotConnectionServer
                     }
                     catch (InterruptedException ex)
                     {
-                        sLOGGER.log(Level.SEVERE, "Interrupted", ex);
+                        sLOGGER.log(Level.ERROR, "Interrupted", ex);
                     }
                 }
             }
@@ -225,7 +226,7 @@ public abstract class RobotConnectionServer
                 }
                 catch (InterruptedException ex)
                 {
-                    sLOGGER.log(Level.SEVERE, "", ex);
+                    sLOGGER.log(Level.ERROR, "", ex);
                 }
             }
         }

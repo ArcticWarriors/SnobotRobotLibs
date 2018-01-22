@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 public class TestASnobot extends BaseTest
 {
 
-    private class TestLoggableModule implements ILoggableModule
+    private static class TestLoggableModule implements ILoggableModule
     {
 
         @Override
@@ -30,7 +30,7 @@ public class TestASnobot extends BaseTest
 
     }
 
-    private class TestSDModule implements ISmartDashboardUpdaterModule
+    private static class TestSDModule implements ISmartDashboardUpdaterModule
     {
 
         @Override
@@ -41,7 +41,7 @@ public class TestASnobot extends BaseTest
 
     }
 
-    private class TestControllable implements IControllableModule
+    private static class TestControllable implements IControllableModule
     {
 
         @Override
@@ -57,7 +57,7 @@ public class TestASnobot extends BaseTest
         }
     }
 
-    private class TestUpdatable implements IUpdateableModule
+    private static class TestUpdatable implements IUpdateableModule
     {
 
         @Override
@@ -67,7 +67,7 @@ public class TestASnobot extends BaseTest
         }
     }
     
-    private class TestSnobot extends ASnobot
+    private static class TestSnobot extends ASnobot
     {
         private TestSnobot()
         {
@@ -107,7 +107,6 @@ public class TestASnobot extends BaseTest
         snobot.testInit();
         snobot.testPeriodic();
         snobot.stop();
-        snobot.getLogger();
     }
 
 }

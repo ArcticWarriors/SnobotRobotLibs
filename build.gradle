@@ -51,6 +51,8 @@ dependencies {
     compile wpilib()
     compile ctre()
     
+    compile 'log4j:log4j:1.2.16'
+    
     // Third Party without maven
     compile files('dependencies/RIOdroid.jar')
     
@@ -84,6 +86,12 @@ findbugs {
     excludeFilter = file("$rootDir/styleguide/findbugs_suppressions.xml")
     effort = "max"
     ignoreFailures = true
+}
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
 }
 //////////////////////////////
 

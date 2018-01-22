@@ -3,8 +3,9 @@ package com.snobot.lib.motion_profile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  * Class able to serialize and de-serialize a list of points into a string. Used
@@ -100,7 +101,7 @@ public final class IdealPlotSerializer
         }
         catch (Exception ex)
         {
-            sLOGGER.log(Level.SEVERE, "", ex);
+            sLOGGER.log(Level.ERROR, "", ex);
         }
 
         return point;

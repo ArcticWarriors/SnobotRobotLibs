@@ -8,8 +8,9 @@ import java.net.SocketException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 public class MjpegReceiver
 {
@@ -165,7 +166,7 @@ public class MjpegReceiver
                 }
                 catch (Exception ex)
                 {
-                    sLOGGER.log(Level.SEVERE, "Could not save image", ex);
+                    sLOGGER.log(Level.ERROR, "Could not save image", ex);
                 }
             }
         }

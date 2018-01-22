@@ -5,11 +5,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 public abstract class ALogger implements ILogger
 {
+
     protected static final Logger sLOGGER = Logger.getLogger("ALogger");
 
     private FileWriter mLogWriter;
@@ -42,7 +44,7 @@ public abstract class ALogger implements ILogger
                 File dir = new File(mLogFilePath);
                 if (!dir.exists())
                 {
-                    sLOGGER.log(Level.SEVERE, "ERROR CREATING LOGGER: Path to '" + mLogFilePath + "' does not exist.  Bailing");
+                    sLOGGER.log(Level.ERROR, "ERROR CREATING LOGGER: Path to '" + mLogFilePath + "' does not exist.  Bailing");
                     mRunning = false;
                     return;
                 }
@@ -55,7 +57,7 @@ public abstract class ALogger implements ILogger
             }
             catch (IOException ex)
             {
-                sLOGGER.log(Level.SEVERE, "", ex);
+                sLOGGER.log(Level.ERROR, "", ex);
             }
         }
     
@@ -74,7 +76,7 @@ public abstract class ALogger implements ILogger
         }
         catch (IOException ex)
         {
-            sLOGGER.log(Level.SEVERE, "", ex);
+            sLOGGER.log(Level.ERROR, "", ex);
             this.stop();
             mLogWriter = null;
         }
@@ -94,7 +96,7 @@ public abstract class ALogger implements ILogger
         }
         catch (IOException ex)
         {
-            sLOGGER.log(Level.SEVERE, "", ex);
+            sLOGGER.log(Level.ERROR, "", ex);
             this.stop();
             mLogWriter = null;
         }
@@ -114,7 +116,7 @@ public abstract class ALogger implements ILogger
         }
         catch (IOException ex)
         {
-            sLOGGER.log(Level.SEVERE, "", ex);
+            sLOGGER.log(Level.ERROR, "", ex);
             this.stop();
             mLogWriter = null;
         }
@@ -134,7 +136,7 @@ public abstract class ALogger implements ILogger
         }
         catch (IOException ex)
         {
-            sLOGGER.log(Level.SEVERE, "", ex);
+            sLOGGER.log(Level.ERROR, "", ex);
             this.stop();
             mLogWriter = null;
         }
@@ -174,7 +176,7 @@ public abstract class ALogger implements ILogger
         }
         catch (IOException ex)
         {
-            sLOGGER.log(Level.SEVERE, "", ex);
+            sLOGGER.log(Level.ERROR, "", ex);
             this.stop();
             mLogWriter = null;
         }
@@ -194,7 +196,7 @@ public abstract class ALogger implements ILogger
         }
         catch (IOException ex)
         {
-            sLOGGER.log(Level.SEVERE, "", ex);
+            sLOGGER.log(Level.ERROR, "", ex);
             this.stop();
             mLogWriter = null;
         }
@@ -212,7 +214,7 @@ public abstract class ALogger implements ILogger
         }
         catch (IOException ex)
         {
-            sLOGGER.log(Level.SEVERE, "", ex);
+            sLOGGER.log(Level.ERROR, "", ex);
             this.stop();
             mLogWriter = null;
         }

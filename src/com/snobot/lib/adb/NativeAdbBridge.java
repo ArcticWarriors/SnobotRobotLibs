@@ -7,7 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
+
+import org.apache.log4j.Level;
 
 public class NativeAdbBridge extends BaseAdbBridge
 {
@@ -41,7 +42,7 @@ public class NativeAdbBridge extends BaseAdbBridge
 
         if (!mValidAdb)
         {
-            sLOGGER.severe("ADB could not be found at '" + aAdbLocation + "'");
+            sLOGGER.log(Level.ERROR, "ADB could not be found at '" + aAdbLocation + "'");
         }
     }
 
@@ -59,7 +60,7 @@ public class NativeAdbBridge extends BaseAdbBridge
 
                     if (line.contains("adb"))
                     {
-                        sLOGGER.warning("Found running ADB, killing it");
+                        sLOGGER.log(Level.ERROR, "Found running ADB, killing it");
                         Runtime.getRuntime().exec("taskkill /F /IM adb.exe");
                         // killProcess.wait(1000);
                     }
@@ -69,7 +70,7 @@ public class NativeAdbBridge extends BaseAdbBridge
             }
             catch (IOException ex)
             {
-                sLOGGER.log(Level.SEVERE, "", ex);
+                sLOGGER.log(Level.ERROR, "", ex);
             }
         }
     }
@@ -93,7 +94,7 @@ public class NativeAdbBridge extends BaseAdbBridge
     {
         if (!mValidAdb)
         {
-            sLOGGER.log(Level.SEVERE, "ADB Location is not valid, cannot run commands!");
+            sLOGGER.log(Level.ERROR, "ADB Location is not valid, cannot run commands!");
             return false;
         }
 
@@ -111,7 +112,7 @@ public class NativeAdbBridge extends BaseAdbBridge
         }
         catch (IOException | InterruptedException ex)
         {
-            sLOGGER.log(Level.WARNING, "Could not run command: " + cmd, ex);
+            sLOGGER.log(Level.ERROR, "Could not run command: " + cmd, ex);
         }
 
         return success;

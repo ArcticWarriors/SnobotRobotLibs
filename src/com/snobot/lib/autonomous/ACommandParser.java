@@ -6,8 +6,9 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.command.Command;
@@ -199,7 +200,7 @@ public abstract class ACommandParser
             }
             catch (Exception ex)
             {
-                sLOGGER.log(Level.SEVERE, "", ex);
+                sLOGGER.log(Level.ERROR, "", ex);
             }
         }
         else
