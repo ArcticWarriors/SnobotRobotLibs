@@ -24,9 +24,9 @@ public class RioDroidAdbBridge extends BaseAdbBridge
             RIOdroid.executeCommand(command);
             success = true;
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            sLOGGER.log(Level.WARNING, "Could not run command: " + command, e);
+            sLOGGER.log(Level.WARNING, "Could not run command: " + command, ex);
         }
 
         return success;

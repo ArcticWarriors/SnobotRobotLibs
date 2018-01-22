@@ -9,7 +9,7 @@ public interface IControllableModule
     void control();
 
     /**
-     * Stops all sensors and motors
+     * Stops all sensors and motors.
      */
     void stop();
 }

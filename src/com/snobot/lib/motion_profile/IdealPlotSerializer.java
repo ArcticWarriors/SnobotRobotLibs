@@ -3,6 +3,8 @@ package com.snobot.lib.motion_profile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Class able to serialize and de-serialize a list of points into a string. Used
@@ -11,10 +13,12 @@ import java.util.StringTokenizer;
  * @author PJ
  *
  */
-public class IdealPlotSerializer
+public final class IdealPlotSerializer
 {
+    private static final Logger sLOGGER = Logger.getLogger("IdealPlotSerializer");
+
     /**
-     * Constructor, private because they should be using the static functions
+     * Constructor, private because they should be using the static functions.
      */
     private IdealPlotSerializer()
     {
@@ -22,7 +26,7 @@ public class IdealPlotSerializer
     }
 
     /**
-     * De-serializes a path from the SmartDashboard
+     * De-serializes a path from the SmartDashboard.
      * 
      * @param aString
      *            The string to de-serialize
@@ -45,7 +49,7 @@ public class IdealPlotSerializer
 
     /**
      * Serializes the given path to a string, so that it can be deserialized
-     * later
+     * later.
      * 
      * @param aPoints
      *            The path to serialize
@@ -65,7 +69,7 @@ public class IdealPlotSerializer
     }
 
     /**
-     * Serializes a single path setpoint
+     * Serializes a single path setpoint.
      * 
      * @param aPoint
      *            The point to serialize
@@ -74,29 +78,29 @@ public class IdealPlotSerializer
      */
     public static String serializePathPoint(PathSetpoint aPoint)
     {
-        return "" + aPoint.mPosition + "," + aPoint.mVelocity + ",";
+        return aPoint.mPosition + "," + aPoint.mVelocity + ",";
     }
 
     /**
-     * De-serializes a single path point
+     * De-serializes a single path point.
      * 
-     * @param tokenizer
+     * @param aTokenizer
      *            The tokenizer containing the point to deserialize
      * 
      * @return The de-serialized point
      */
-    public static PathSetpoint deserializePathPoint(StringTokenizer tokenizer)
+    public static PathSetpoint deserializePathPoint(StringTokenizer aTokenizer)
     {
         PathSetpoint point = new PathSetpoint();
 
         try
         {
-            point.mPosition = Double.parseDouble(tokenizer.nextToken());
-            point.mVelocity = Double.parseDouble(tokenizer.nextToken());
+            point.mPosition = Double.parseDouble(aTokenizer.nextToken());
+            point.mVelocity = Double.parseDouble(aTokenizer.nextToken());
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            e.printStackTrace();
+            sLOGGER.log(Level.SEVERE, "", ex);
         }
 
         return point;

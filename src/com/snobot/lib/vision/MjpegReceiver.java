@@ -8,18 +8,22 @@ import java.net.SocketException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MjpegReceiver
 {
+    protected static final Logger sLOGGER = Logger.getLogger("MjpegReceiver");
+
     private static final int[] START_BYTES = new int[]{ 0xFF, 0xD8 };
     private static final byte[] END_BYTES = "--boundary".getBytes();
     private boolean mRunning;
     private int mReadTimeout;
-    private List<ImageReceiver> mImageRecievers;
+    private final List<ImageReceiver> mImageRecievers;
 
     public interface ImageReceiver
     {
-        public void onImage(byte[] image);
+        void onImage(byte[] aImage);
     }
 
     public MjpegReceiver()
@@ -28,26 +32,26 @@ public class MjpegReceiver
         mReadTimeout = 0;
     }
 
-    public void addImageReceiver(ImageReceiver imageReceiver)
+    public void addImageReceiver(ImageReceiver aImageReceiver)
     {
-        mImageRecievers.add(imageReceiver);
+        mImageRecievers.add(aImageReceiver);
     }
 
     /**
      * Starts the receiving thread. Thread will run until stop() is called
      * 
-     * @param imageUrl
+     * @param aImageUrl
      *            The URL to connect to
      */
-    public void start(String imageUrl)
+    public void start(String aImageUrl)
     {
         mRunning = true;
 
-        new Thread(new ReceiveThread(imageUrl), "MjpegReciever").start();
+        new Thread(new ReceiveThread(aImageUrl), "MjpegReciever").start();
     }
 
     /**
-     * Stops the receiving thread
+     * Stops the receiving thread.
      */
     public void stop()
     {
@@ -67,14 +71,14 @@ public class MjpegReceiver
         mReadTimeout = aTimeout;
     }
 
-    private byte[] parseImage(InputStream stream, ByteArrayOutputStream imageBuffer) throws IOException
+    private byte[] parseImage(InputStream aStream, ByteArrayOutputStream aImageBuffer) throws IOException
     {
 //        System.out.println("Buffer size : " + stream.available());
-        imageBuffer.reset();
+        aImageBuffer.reset();
         for (int i = 0; i < START_BYTES.length;)
         {
-            int b = stream.read();
-            if (b == START_BYTES[i])
+            int bytes = aStream.read();
+            if (bytes == START_BYTES[i])
             {
                 i++;
             }
@@ -87,19 +91,19 @@ public class MjpegReceiver
 
         for (int i = 0; i < START_BYTES.length; ++i)
         {
-            imageBuffer.write(START_BYTES[i]);
+            aImageBuffer.write(START_BYTES[i]);
         }
 
         for (int i = 0; i < END_BYTES.length;)
         {
-            if (imageBuffer.size() > 1000000)
+            if (aImageBuffer.size() > 1000000)
             {
-                imageBuffer.close();
+                aImageBuffer.close();
                 return null;
             }
-            int b = stream.read();
-            imageBuffer.write(b);
-            if (b == END_BYTES[i])
+            int bytes = aStream.read();
+            aImageBuffer.write(bytes);
+            if (bytes == END_BYTES[i])
             {
                 i++;
             }
@@ -109,16 +113,15 @@ public class MjpegReceiver
             }
         }
 
-        byte[] imageBytes = imageBuffer.toByteArray();
-        return imageBytes;
+        return aImageBuffer.toByteArray();
 
     }
 
-    private void publishImage(byte[] imageData)
+    private void publishImage(byte[] aImageData)
     {
         for (ImageReceiver recv : mImageRecievers)
         {
-            recv.onImage(imageData);
+            recv.onImage(aImageData);
         }
     }
 
@@ -127,7 +130,7 @@ public class MjpegReceiver
         private final String mImageUrl;
         private boolean mConnected;
 
-        public ReceiveThread(String aImageUrl)
+        private ReceiveThread(String aImageUrl)
         {
             mImageUrl = aImageUrl;
         }
@@ -135,7 +138,7 @@ public class MjpegReceiver
         @Override
         public void run()
         {
-            System.out.println("Attempting to connect to camera at " + mImageUrl);
+            sLOGGER.log(Level.INFO, "Attempting to connect to camera at " + mImageUrl);
             while (mRunning)
             {
                 try
@@ -155,17 +158,16 @@ public class MjpegReceiver
                         publishImage(imageData);
                     }
                 }
-                catch (SocketException e)
+                catch (SocketException ex)
                 {
                     mConnected = false;
                     publishImage(null);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    System.err.println("Could not save image : " + e.getMessage());
-                    e.printStackTrace();
+                    sLOGGER.log(Level.SEVERE, "Could not save image", ex);
                 }
             }
         }
-    };
+    }
 }

@@ -19,29 +19,29 @@ public abstract class RobotConnectionServer
     private double mLastReceivedMessage = 0;
 
     private boolean mRunning = true;
-    private ArrayList<ServerThread> mServerThreads = new ArrayList<>();
+    private final ArrayList<ServerThread> mServerThreads = new ArrayList<>();
 
     /**
-     * Constructor
+     * Constructor.
      * 
-     * @param bindPort
+     * @param aBindPort
      *            The port the accepting socket will bind to
      * @param aConnectionTimeout
      *            The amount of time that should elapse in seconds between
      *            heartbeats that would indicate the connection has been lost
      */
-    public RobotConnectionServer(int bindPort, double aConnectionTimeout)
+    public RobotConnectionServer(int aBindPort, double aConnectionTimeout)
     {
         try
         {
-            mServerSocket = new ServerSocket(bindPort);
+            mServerSocket = new ServerSocket(aBindPort);
 
             new Thread(mConnectionThread, "RobotConnectionServer::ConnectionAcceptor").start();
             new Thread(new AppMaintainanceThread(aConnectionTimeout), "RobotConnectionServer::ConnectionMonitor").start();
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            e.printStackTrace();
+            sLOGGER.log(Level.SEVERE, "", ex);
         }
     }
 
@@ -50,38 +50,38 @@ public abstract class RobotConnectionServer
         return mIsConnected;
     }
 
-    protected void send(ByteBuffer buffer)
+    protected void send(ByteBuffer aBuffer)
     {
         for (ServerThread thread : mServerThreads)
         {
             if (thread.isAlive())
             {
-                thread.send(buffer);
+                thread.send(aBuffer);
             }
         }
     }
 
     private class ServerThread implements Runnable
     {
-        private Socket mSocket;
+        private final Socket mSocket;
 
-        public ServerThread(Socket socket)
+        private ServerThread(Socket aSocket)
         {
-            mSocket = socket;
+            mSocket = aSocket;
         }
 
-        public void send(ByteBuffer message)
+        public void send(ByteBuffer aMessage)
         {
             if (mSocket != null && mSocket.isConnected())
             {
                 try
                 {
                     OutputStream os = mSocket.getOutputStream();
-                    os.write(message.array());
+                    os.write(aMessage.array());
                 }
-                catch (IOException e)
+                catch (IOException ex)
                 {
-                    sLOGGER.log(Level.SEVERE, "Could not send data to socket", e);
+                    sLOGGER.log(Level.SEVERE, "Could not send data to socket", ex);
                 }
             }
         }
@@ -117,28 +117,25 @@ public abstract class RobotConnectionServer
                 sLOGGER.log(Level.INFO, "Socked Disconnected: " + mSocket);
                 mServerThreads.remove(this);
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
                 // Timeout is OK
                 sLOGGER.log(Level.INFO, "Socked Disconnected (timeout): " + mSocket);
                 mServerThreads.remove(this);
             }
 
-            if (mSocket != null)
+            try
             {
-                try
-                {
-                    mSocket.close();
-                }
-                catch (IOException e)
-                {
-                    sLOGGER.log(Level.SEVERE, "Could not close socket", e);
-                }
+                mSocket.close();
+            }
+            catch (IOException ex)
+            {
+                sLOGGER.log(Level.SEVERE, "Could not close socket", ex);
             }
         }
     }
 
-    private Runnable mConnectionThread = new Runnable()
+    private final Runnable mConnectionThread = new Runnable()
     {
 
         @Override
@@ -148,16 +145,16 @@ public abstract class RobotConnectionServer
             {
                 try
                 {
-                    Socket p = mServerSocket.accept();
-                    sLOGGER.log(Level.INFO, "Accepted Socket: " + p);
+                    Socket acceptSocket = mServerSocket.accept();
+                    sLOGGER.log(Level.INFO, "Accepted Socket: " + acceptSocket);
 
-                    ServerThread s = new ServerThread(p);
-                    new Thread(s, "RobotConnectionServer::ServerConnection").start();
-                    mServerThreads.add(s);
+                    ServerThread socket = new ServerThread(acceptSocket);
+                    new Thread(socket, "RobotConnectionServer::ServerConnection").start();
+                    mServerThreads.add(socket);
                 }
-                catch (IOException e)
+                catch (IOException ex)
                 {
-                    sLOGGER.log(Level.SEVERE, "Issue accepting incoming sockets", e);
+                    sLOGGER.log(Level.SEVERE, "Issue accepting incoming sockets", ex);
                 }
                 finally
                 {
@@ -165,9 +162,9 @@ public abstract class RobotConnectionServer
                     {
                         Thread.sleep(100);
                     }
-                    catch (InterruptedException e)
+                    catch (InterruptedException ex)
                     {
-                        sLOGGER.log(Level.SEVERE, "Interrupted", e);
+                        sLOGGER.log(Level.SEVERE, "Interrupted", ex);
                     }
                 }
             }
@@ -178,21 +175,21 @@ public abstract class RobotConnectionServer
     {
         /**
          * If the time between the last message and now (in seconds) is greater
-         * than this, the connection will be considered disconnected
+         * than this, the connection will be considered disconnected.
          */
         private final double mTimeout;
 
         /**
-         * Time to sleep inbetween loops, in milliseconds
+         * Time to sleep inbetween loops, in milliseconds.
          */
         private final long mRefreshRate;
 
-        public AppMaintainanceThread(double aTimeoutPeriod)
+        private AppMaintainanceThread(double aTimeoutPeriod)
         {
             this(200, aTimeoutPeriod);
         }
 
-        public AppMaintainanceThread(long aRefreshRate, double aTimeoutPeriod)
+        private AppMaintainanceThread(long aRefreshRate, double aTimeoutPeriod)
         {
             mRefreshRate = aRefreshRate;
             mTimeout = aTimeoutPeriod;
@@ -226,17 +223,22 @@ public abstract class RobotConnectionServer
                 {
                     Thread.sleep(mRefreshRate);
                 }
-                catch (InterruptedException e)
+                catch (InterruptedException ex)
                 {
-                    e.printStackTrace();
+                    sLOGGER.log(Level.SEVERE, "", ex);
                 }
             }
         }
     }
 
+    public final void stop()
+    {
+        mRunning = false;
+    }
+
     /**
      * Called when the connection monitor has determined a connection has been
-     * started for the first time
+     * started for the first time.
      */
     public abstract void onConnected();
 
@@ -248,18 +250,18 @@ public abstract class RobotConnectionServer
 
     /**
      * Called when a message has been received. Up to the child class to
-     * determine how to parse it and what to do with it
+     * determine how to parse it and what to do with it.
      * 
-     * @param message
+     * @param aMessage
      *            The message to parse
-     * @param timestamp
+     * @param aTimestamp
      *            The timestamp it was received, according to
      *            {@link #getTimestamp}
      */
-    public abstract void handleMessage(String message, double timestamp);
+    public abstract void handleMessage(String aMessage, double aTimestamp);
 
     /**
-     * Gets the current time, in seconds
+     * Gets the current time, in seconds.
      * 
      * @return The time
      */

@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class StaticSetpointIterator implements ISetpointIterator
 {
-    /** The pre-planed path */
+    /** The pre-planed path. */
     private List<PathSetpoint> mListPoints;
 
     /**
@@ -48,7 +48,7 @@ public class StaticSetpointIterator implements ISetpointIterator
     @Override
     public boolean isFinished()
     {
-        return (mPathIndex >= mListPoints.size());
+        return mPathIndex >= mListPoints.size();
     }
 
     @Override

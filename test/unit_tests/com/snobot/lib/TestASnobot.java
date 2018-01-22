@@ -19,13 +19,13 @@ public class TestASnobot extends BaseTest
         @Override
         public void initializeLogHeaders()
         {
-
+            // Nothing to do
         }
 
         @Override
         public void updateLog()
         {
-
+            // Nothing to do
         }
 
     }
@@ -36,7 +36,7 @@ public class TestASnobot extends BaseTest
         @Override
         public void updateSmartDashboard()
         {
-
+            // Nothing to do
         }
 
     }
@@ -47,13 +47,13 @@ public class TestASnobot extends BaseTest
         @Override
         public void control()
         {
-
+            // Nothing to do
         }
 
         @Override
         public void stop()
         {
-
+            // Nothing to do
         }
     }
 
@@ -63,13 +63,13 @@ public class TestASnobot extends BaseTest
         @Override
         public void update()
         {
-
+            // Nothing to do
         }
     }
     
     private class TestSnobot extends ASnobot
     {
-        public TestSnobot()
+        private TestSnobot()
         {
             TestLoggableModule loggable = new TestLoggableModule();
             addModule(loggable);

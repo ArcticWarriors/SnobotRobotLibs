@@ -1,6 +1,7 @@
 package com.snobot.lib.logging;
 
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
@@ -13,7 +14,7 @@ public class TestLogger
     public void testLogger()
     {
         Logger logger = new Logger();
-        logger.startLogging(new SimpleDateFormat(""), ".");
+        logger.startLogging(new SimpleDateFormat("", Locale.getDefault()), ".");
         logger.initializeLogger();
         logger.addHeader("StringHeader");
         logger.addHeader("IntHeader");
@@ -36,7 +37,7 @@ public class TestLogger
     public void testLoggerWithBadDirectory()
     {
         Logger logger = new Logger();
-        logger.startLogging(new SimpleDateFormat(""), "does_not_exist");
+        logger.startLogging(new SimpleDateFormat("", Locale.getDefault()), "does_not_exist");
         logger.initializeLogger();
         logger.addHeader("StringHeader");
         logger.addHeader("IntHeader");

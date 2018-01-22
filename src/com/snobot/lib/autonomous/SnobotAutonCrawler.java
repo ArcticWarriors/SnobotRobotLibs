@@ -10,11 +10,15 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class SnobotAutonCrawler extends SimpleFileVisitor<Path>
 {
-    private List<Path> mPaths;
-    private String mIgnoreString;
+    private static final Logger sLOGGER = Logger.getLogger("SnobotAutonCrawler");
+
+    private final List<Path> mPaths;
+    private final String mIgnoreString;
 
     public SnobotAutonCrawler(String aIgnoreString)
     {
@@ -25,7 +29,7 @@ public final class SnobotAutonCrawler extends SimpleFileVisitor<Path>
     @Override
     public FileVisitResult visitFile(Path aFile, BasicFileAttributes aAttrs) throws IOException
     {
-        System.out.println("  Keeping file " + aFile);
+        sLOGGER.log(Level.FINE, "  Keeping file " + aFile);
         mPaths.add(aFile);
 
         return FileVisitResult.CONTINUE;
@@ -37,12 +41,12 @@ public final class SnobotAutonCrawler extends SimpleFileVisitor<Path>
         Path dirName = aDir.getFileName();
         if (dirName.startsWith(mIgnoreString))
         {
-            System.out.println(" Skipping directory: " + dirName);
+            sLOGGER.log(Level.INFO, " Skipping directory: " + dirName);
             return FileVisitResult.SKIP_SUBTREE;
         }
         else
         {
-            System.out.println(" Processing directory: " + dirName);
+            sLOGGER.log(Level.INFO, " Processing directory: " + dirName);
             return FileVisitResult.CONTINUE;
         }
     }
@@ -56,6 +60,16 @@ public final class SnobotAutonCrawler extends SimpleFileVisitor<Path>
         return loadAutonFiles(aDir, null);
     }
 
+    /**
+     * Discovers all of the autonomous files in the given location, and
+     * populates a sendable chooser with the [filename -> File()] mapping.
+     * 
+     * @param aDir
+     *            The directory to recursively search
+     * @param aDefaultName
+     *            The name of the default command
+     * @return The populated chooser
+     */
     public ObservableSendableChooser<File> loadAutonFiles(String aDir, String aDefaultName)
     {
         ObservableSendableChooser<File> output = new ObservableSendableChooser<>();
@@ -63,8 +77,8 @@ public final class SnobotAutonCrawler extends SimpleFileVisitor<Path>
 
         if (autonDr.exists())
         {
-            System.out.println("Reading auton files from directory " + autonDr.getAbsolutePath());
-            System.out.println(" Using filter : \"" + mIgnoreString + "\"");
+            sLOGGER.log(Level.INFO, "Reading auton files from directory " + autonDr.getAbsolutePath());
+            sLOGGER.log(Level.INFO, " Using filter : \"" + mIgnoreString + "\"");
 
             try
             {
@@ -84,14 +98,14 @@ public final class SnobotAutonCrawler extends SimpleFileVisitor<Path>
                     }
                 }
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
-                e.printStackTrace();
+                sLOGGER.log(Level.SEVERE, "", ex);
             }
         }
         else
         {
-            System.err.println("Auton directory " + aDir + " does not exist!");
+            sLOGGER.log(Level.SEVERE, "Auton directory " + aDir + " does not exist!");
         }
 
         return output;

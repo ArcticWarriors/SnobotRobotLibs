@@ -4,13 +4,19 @@ import edu.wpi.first.wpilibj.Preferences;
 
 public class PropertyManager
 {
-    private static boolean sPropertyAdded = false;
-
-    public static abstract class IProperty<Type>
+    public abstract static class IProperty<Type>
     {
         protected String mKey;
         protected Type mDefault;
 
+        /**
+         * Base class for a property.
+         * 
+         * @param aKey
+         *            The key of the preference
+         * @param aDefault
+         *            The default value to use if it is not in the network table
+         */
         public IProperty(String aKey, Type aDefault)
         {
             mKey = aKey;
@@ -47,7 +53,6 @@ public class PropertyManager
                 return Preferences.getInstance().getDouble(mKey, mDefault);
             }
 
-            sPropertyAdded = true;
             Preferences.getInstance().putDouble(mKey, mDefault);
             return mDefault;
         }
@@ -70,7 +75,6 @@ public class PropertyManager
                 return Preferences.getInstance().getInt(mKey, mDefault);
             }
 
-            sPropertyAdded = true;
             Preferences.getInstance().putInt(mKey, mDefault);
             return mDefault;
         }
@@ -97,7 +101,6 @@ public class PropertyManager
                 return Preferences.getInstance().getString(mKey, mDefault);
             }
 
-            sPropertyAdded = true;
             Preferences.getInstance().putString(mKey, mDefault);
             return mDefault;
         }
@@ -124,20 +127,8 @@ public class PropertyManager
                 return Preferences.getInstance().getBoolean(mKey, mDefault);
             }
 
-            sPropertyAdded = true;
             Preferences.getInstance().putBoolean(mKey, mDefault);
             return mDefault;
-        }
-    }
-
-    public static void saveIfUpdated()
-    {
-        if (sPropertyAdded)
-        {
-            System.out.println("-------------------------------------------");
-            System.out.println("Config file updated, saving it");
-            System.out.println("-------------------------------------------");
-            sPropertyAdded = false;
         }
     }
 }

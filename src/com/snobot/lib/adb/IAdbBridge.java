@@ -11,12 +11,12 @@ public interface IAdbBridge
 {
 
     /**
-     * Starts the ADB server
+     * Starts the ADB server.
      */
     void start();
 
     /**
-     * Stops the ADB server
+     * Stops the ADB server.
      */
     void stop();
 
@@ -26,12 +26,12 @@ public interface IAdbBridge
     void restartAdb();
 
     /**
-     * Restarts the app you are connecting to
+     * Restarts the app you are connecting to.
      */
     void restartApp();
 
     /**
-     * Forwards a port on the phone to a port on the robot
+     * Forwards a port on the phone to a port on the robot.
      * 
      * @param aLocalPort
      *            The local port to forward data to
@@ -41,8 +41,7 @@ public interface IAdbBridge
     void portForward(int aLocalPort, int aRemotePort);
 
     /**
-     * 
-     * Forwards a port on the phone to a port on the robot
+     * Forwards a port on the phone to a port on the robot.
      * 
      * @param aLocalPort
      *            The local port to forward data to

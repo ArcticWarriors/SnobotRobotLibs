@@ -1,0 +1,13 @@
+<FindBugsFilter>
+    <Match>
+        <Package name="~com\.team254.*"/>
+    </Match>
+    <Match>
+        <Package name="~.*"/>
+        <Bug pattern="DM_DEFAULT_ENCODING" />
+    </Match>
+    <Match>
+        <Class name=".*MjpgServer"/>
+        <Bug pattern="LI_LAZY_INIT_STATIC" />
+    </Match>
+</FindBugsFilter>
