@@ -5,7 +5,9 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 public class MjpgServer
 {
@@ -13,13 +15,27 @@ public class MjpgServer
     private static final String K_BOUNDARY = "boundary";
     private static final int sDEFAULT_PORT = 5800;
 
-    private static MjpgServer sInst = null;
+    private static volatile MjpgServer sInst = null;
+
+    private final ArrayList<Connection> mConnections = new ArrayList<>();
+    private final Object mLock = new Object();
+
+    private final int mBindPort;
+    private final ServerSocket mServerSocket;
+    private boolean mRunning;
 
     public static MjpgServer getInstance()
     {
         return getInstance(sDEFAULT_PORT);
     }
 
+    /**
+     * Singleton getter. Lazilly instantiates the server with the given port
+     * 
+     * @param aPort
+     *            The port to bind to
+     * @return The singleton instance
+     */
     public static MjpgServer getInstance(int aPort)
     {
         if (sInst == null)
@@ -33,17 +49,14 @@ public class MjpgServer
         return sInst;
     }
 
-    private ArrayList<Connection> mConnections = new ArrayList<>();
-    private Object mLock = new Object();
-
-    private class Connection
+    private static class Connection
     {
 
-        private Socket mSocket;
+        private final Socket mSocket;
 
-        public Connection(Socket s)
+        private Connection(Socket aSocket)
         {
-            mSocket = s;
+            mSocket = aSocket;
         }
 
         public boolean isAlive()
@@ -58,15 +71,15 @@ public class MjpgServer
                 sLOGGER.info("Starting a connection!");
                 OutputStream stream = mSocket.getOutputStream();
                 stream.write(("HTTP/1.0 200 OK\r\n" + "Server: cheezyvision\r\n" + "Cache-Control: no-cache\r\n" + "Pragma: no-cache\r\n"
-                        + "Connection: close\r\n" + "Content-Type: multipart/x-mixed-replace;boundary=--" + K_BOUNDARY + "\r\n").getBytes());
+                        + "Connection: close\r\n" + "Content-Type: multipart/x-mixed-replace;boundary=--" + K_BOUNDARY + "\r\n").getBytes()); // NOPMD
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
-                e.printStackTrace();
+                sLOGGER.log(Level.ERROR, "", ex);
             }
         }
 
-        public void writeImageUpdate(byte[] buffer)
+        public void writeImageUpdate(byte[] aBuffer)
         {
             if (!isAlive())
             {
@@ -77,18 +90,19 @@ public class MjpgServer
             {
                 stream = mSocket.getOutputStream();
 
-                String output;
-                output = "\r\n--" + K_BOUNDARY + "\r\n";
-                output += "Content-type: image/jpeg\r\n";
-                output += "Content-Length: " + buffer.length + "\r\n";
-                output += "\r\n";
+                StringBuilder output = new StringBuilder(70);
+                output.append("\r\n--") 
+                        .append(K_BOUNDARY)
+                        .append("\r\nContent-type: image/jpeg\r\nContent-Length: ")
+                        .append(aBuffer.length)
+                        .append("\r\n\r\n");
 
-                stream.write(output.getBytes());
-                stream.write(buffer);
+                stream.write(output.toString().getBytes());
+                stream.write(aBuffer);
                 stream.flush();
 
             }
-            catch (IOException e)
+            catch (IOException ex) // NOPMD
             {
                 // There is a broken pipe exception being thrown here I cannot
                 // figure out.
@@ -97,30 +111,36 @@ public class MjpgServer
 
     }
 
-    private final int mBindPort;
-    private ServerSocket mServerSocket;
-    private boolean mRunning;
-    private Thread mRunThread;
-
     private MjpgServer(int aBindPort)
     {
         mBindPort = aBindPort;
+        ServerSocket socket = null;
         try
         {
-            mServerSocket = new ServerSocket(mBindPort);
+            socket = new ServerSocket(mBindPort);
             mRunning = true;
-            mRunThread = new Thread(runner);
-            mRunThread.start();
+            Thread runThread = new Thread(mRunner);
+            runThread.start();
         }
-        catch (IOException e)
+        catch (IOException ex)
         {
-            e.printStackTrace();
+            sLOGGER.log(Level.ERROR, "", ex);
+        }
+        finally
+        {
+            mServerSocket = socket;
         }
     }
 
-    public void update(byte[] bytes)
+    /**
+     * Sends the bytes stream to all of the connected sources.
+     * 
+     * @param aBytes
+     *            The bytes
+     */
+    public void update(byte[] aBytes)
     {
-        if (bytes == null)
+        if (aBytes == null)
         {
             return;
         }
@@ -132,14 +152,14 @@ public class MjpgServer
             {
                 for (int i = 0; i < mConnections.size(); i++)
                 {
-                    Connection c = mConnections.get(i);
-                    if (c == null || !c.isAlive())
+                    Connection connection = mConnections.get(i);
+                    if (connection == null || !connection.isAlive())
                     {
                         badIndices.add(i);
                     }
                     else
                     {
-                        c.writeImageUpdate(bytes);
+                        connection.writeImageUpdate(aBytes);
                     }
                 }
                 for (int i : badIndices)
@@ -147,14 +167,14 @@ public class MjpgServer
                     mConnections.remove(i);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                e.printStackTrace();
+                sLOGGER.log(Level.ERROR, "", ex);
             }
         }
     }
 
-    Runnable runner = new Runnable()
+    Runnable mRunner = new Runnable()
     {
 
         @Override
@@ -165,18 +185,18 @@ public class MjpgServer
                 try
                 {
                     sLOGGER.info("Waiting for connections");
-                    Socket s = mServerSocket.accept();
-                    sLOGGER.info("Got a socket: " + s);
-                    Connection c = new Connection(s);
+                    Socket socket = mServerSocket.accept();
+                    sLOGGER.info("Got a socket: " + socket);
+                    Connection connection = new Connection(socket);
                     synchronized (mLock)
                     {
-                        mConnections.add(c);
+                        mConnections.add(connection);
                     }
-                    c.start();
+                    connection.start();
                 }
-                catch (IOException e)
+                catch (IOException ex)
                 {
-                    e.printStackTrace();
+                    sLOGGER.log(Level.ERROR, "", ex);
                 }
             }
         }

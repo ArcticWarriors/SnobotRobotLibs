@@ -7,13 +7,27 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
+
+import org.apache.log4j.Level;
 
 public class NativeAdbBridge extends BaseAdbBridge
 {
     protected final Path mAdbLocation;
     protected final boolean mValidAdb;
 
+    /**
+     * Constructor. Kills the old ADB's and starts up a new one
+     * 
+     * @param aAdbLocation
+     *            The absolute location of the ADB binary
+     * @param aAppPackage
+     *            The apps package, used to restart the app
+     * @param aAppMainActivity
+     *            The apps main activity, used to restart the app
+     * @param aKillOldAdbs
+     *            If set, this will kill all of the currently running ADB
+     *            processes
+     */
     public NativeAdbBridge(String aAdbLocation, String aAppPackage, String aAppMainActivity, boolean aKillOldAdbs)
     {
         super(aAppPackage, aAppMainActivity);
@@ -28,7 +42,7 @@ public class NativeAdbBridge extends BaseAdbBridge
 
         if (!mValidAdb)
         {
-            sLOGGER.severe("ADB could not be found at '" + aAdbLocation + "'");
+            sLOGGER.log(Level.ERROR, "ADB could not be found at '" + aAdbLocation + "'");
         }
     }
 
@@ -38,25 +52,25 @@ public class NativeAdbBridge extends BaseAdbBridge
         {
             try
             {
-                Process p = Runtime.getRuntime().exec("tasklist");
-                BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                Process process = Runtime.getRuntime().exec("tasklist");
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                 String line;
                 while ((line = reader.readLine()) != null)
                 {
 
                     if (line.contains("adb"))
                     {
-                        sLOGGER.warning("Found running ADB, killing it");
+                        sLOGGER.log(Level.ERROR, "Found running ADB, killing it");
                         Runtime.getRuntime().exec("taskkill /F /IM adb.exe");
                         // killProcess.wait(1000);
                     }
                 }
+                reader.close();
                 sLOGGER.info("Killed old ADB's");
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                sLOGGER.log(Level.ERROR, "", ex);
             }
         }
     }
@@ -76,16 +90,16 @@ public class NativeAdbBridge extends BaseAdbBridge
     }
 
     @Override
-    protected boolean runCommand(String args)
+    protected boolean runCommand(String aArgs)
     {
         if (!mValidAdb)
         {
-            sLOGGER.log(Level.SEVERE, "ADB Location is not valid, cannot run commands!");
+            sLOGGER.log(Level.ERROR, "ADB Location is not valid, cannot run commands!");
             return false;
         }
 
-        Runtime r = Runtime.getRuntime();
-        String cmd = mAdbLocation.toString() + " " + args;
+        Runtime runtime = Runtime.getRuntime();
+        String cmd = mAdbLocation.toString() + " " + aArgs;
 
         boolean success = false;
 
@@ -93,12 +107,12 @@ public class NativeAdbBridge extends BaseAdbBridge
         {
             sLOGGER.log(Level.INFO, "Running ADB Command: " + cmd);
 
-            Process p = r.exec(cmd);
-            success = p.waitFor(10, TimeUnit.SECONDS);
+            Process process = runtime.exec(cmd);
+            success = process.waitFor(10, TimeUnit.SECONDS);
         }
-        catch (IOException | InterruptedException e)
+        catch (IOException | InterruptedException ex)
         {
-            sLOGGER.log(Level.WARNING, "Could not run command: " + cmd, e);
+            sLOGGER.log(Level.ERROR, "Could not run command: " + cmd, ex);
         }
 
         return success;

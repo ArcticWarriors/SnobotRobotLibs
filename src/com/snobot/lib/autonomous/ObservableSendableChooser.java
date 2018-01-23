@@ -11,16 +11,16 @@ public class ObservableSendableChooser<V> extends SendableChooser<V>
     private NetworkTable mTable;
 
     @Override
-    public void initSendable(SendableBuilder builder)
+    public void initSendable(SendableBuilder aBuilder)
     {
-        super.initSendable(builder);
+        super.initSendable(aBuilder);
 
-        SendableBuilderImpl castBuilder = (SendableBuilderImpl) builder;
+        SendableBuilderImpl castBuilder = (SendableBuilderImpl) aBuilder;
         mTable = castBuilder.getTable();
     }
 
-    public void addSelectionChangedListener(TableEntryListener listener)
+    public void addSelectionChangedListener(TableEntryListener aListener)
     {
-        mTable.addEntryListener("selected", listener, 0xFF);
+        mTable.addEntryListener("selected", aListener, 0xFF);
     }
 }
