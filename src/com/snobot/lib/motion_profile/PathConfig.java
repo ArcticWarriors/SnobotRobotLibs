@@ -2,16 +2,16 @@ package com.snobot.lib.motion_profile;
 
 public class PathConfig
 {
-    /** The desired ending setpoint for the robot (distance or angle) */
+    /** The desired ending setpoint for the robot (distance or angle). */
     public double mEndpoint;
 
-    /** The maximum velocity to drive the robot (ft/s or deg/s) */
+    /** The maximum velocity to drive the robot (ft/s or deg/s). */
     public double mMaxVelocity;
 
-    /** The maximum acceleration to drive with (ft/s/s, deg/s/s) */
+    /** The maximum acceleration to drive with (ft/s/s, deg/s/s). */
     public double mMaxAcceleration;
 
-    /** The expected time between loops */
+    /** The expected time between loops. */
     public double mExpectedDt;
 
     public PathConfig()
@@ -19,6 +19,18 @@ public class PathConfig
         this(0, 0, 0, 0);
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param aEndpoint
+     *            The endpoint
+     * @param aMaxVel
+     *            The max velocity
+     * @param aMaxAccel
+     *            The max acceleration
+     * @param aDt
+     *            The time delta
+     */
     public PathConfig(double aEndpoint, double aMaxVel, double aMaxAccel, double aDt)
     {
         mEndpoint = aEndpoint;

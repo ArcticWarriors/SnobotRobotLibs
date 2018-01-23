@@ -11,12 +11,15 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 public final class SnobotAutonCrawler extends SimpleFileVisitor<Path>
 {
-    private List<Path> mPaths;
-    private String mIgnoreString;
+    private static final Logger sLOGGER = Logger.getLogger("SnobotAutonCrawler");
+
+    private final List<Path> mPaths;
+    private final String mIgnoreString;
 
     public SnobotAutonCrawler(String aIgnoreString)
     {
@@ -27,7 +30,7 @@ public final class SnobotAutonCrawler extends SimpleFileVisitor<Path>
     @Override
     public FileVisitResult visitFile(Path aFile, BasicFileAttributes aAttrs) throws IOException
     {
-        System.out.println("  Keeping file " + aFile);
+        sLOGGER.log(Level.DEBUG, "  Keeping file " + aFile);
         mPaths.add(aFile);
 
         return FileVisitResult.CONTINUE;
@@ -37,14 +40,14 @@ public final class SnobotAutonCrawler extends SimpleFileVisitor<Path>
     public FileVisitResult preVisitDirectory(Path aDir, BasicFileAttributes aAttrs) throws IOException
     {
         Path dirName = aDir.getFileName();
-        if (dirName.startsWith(mIgnoreString))
+        if (dirName != null && dirName.startsWith(mIgnoreString))
         {
-            System.out.println(" Skipping directory: " + dirName);
+            sLOGGER.log(Level.INFO, " Skipping directory: " + dirName);
             return FileVisitResult.SKIP_SUBTREE;
         }
         else
         {
-            System.out.println(" Processing directory: " + dirName);
+            sLOGGER.log(Level.INFO, " Processing directory: " + dirName);
             return FileVisitResult.CONTINUE;
         }
     }
@@ -53,19 +56,30 @@ public final class SnobotAutonCrawler extends SimpleFileVisitor<Path>
      * This is just part of the auton crawler wee lifted from last year. It
      * makes a chooser out of all the files in a specified folder.
      */
-    public SendableChooser<File> loadAutonFiles(String aDir)
+    public ObservableSendableChooser<File> loadAutonFiles(String aDir)
     {
         return loadAutonFiles(aDir, null);
     }
-    public SendableChooser<File> loadAutonFiles(String aDir, String aDefaultName)
+
+    /**
+     * Discovers all of the autonomous files in the given location, and
+     * populates a sendable chooser with the [filename -> File()] mapping.
+     * 
+     * @param aDir
+     *            The directory to recursively search
+     * @param aDefaultName
+     *            The name of the default command
+     * @return The populated chooser
+     */
+    public ObservableSendableChooser<File> loadAutonFiles(String aDir, String aDefaultName)
     {
-        SendableChooser<File> output = new SendableChooser<>();
+        ObservableSendableChooser<File> output = new ObservableSendableChooser<>();
         File autonDr = new File(aDir);
 
         if (autonDr.exists())
         {
-            System.out.println("Reading auton files from directory " + autonDr.getAbsolutePath());
-            System.out.println(" Using filter : \"" + mIgnoreString + "\"");
+            sLOGGER.log(Level.INFO, "Reading auton files from directory " + autonDr.getAbsolutePath());
+            sLOGGER.log(Level.INFO, " Using filter : \"" + mIgnoreString + "\"");
 
             try
             {
@@ -74,25 +88,31 @@ public final class SnobotAutonCrawler extends SimpleFileVisitor<Path>
                 boolean isFirst = true;
                 for (Path p : mPaths)
                 {
-                    if ((isFirst && aDefaultName == null) || p.getFileName().toString().equals(aDefaultName))
+                    Path filename = p.getFileName();
+                    if (filename == null)
                     {
-                        output.addDefault(p.getFileName().toString(), p.toFile());
+                        continue;
+                    }
+
+                    if ((isFirst && aDefaultName == null) || filename.toString().equals(aDefaultName))
+                    {
+                        output.addDefault(filename.toString(), p.toFile());
                         isFirst = false;
                     }
                     else
                     {
-                        output.addObject(p.getFileName().toString(), p.toFile());
+                        output.addObject(filename.toString(), p.toFile());
                     }
                 }
             }
-            catch (IOException e)
+            catch (IOException ex)
             {
-                e.printStackTrace();
+                sLOGGER.log(Level.ERROR, "", ex);
             }
         }
         else
         {
-            System.err.println("Auton directory " + aDir + " does not exist!");
+            sLOGGER.log(Level.ERROR, "Auton directory " + aDir + " does not exist!");
         }
 
         return output;

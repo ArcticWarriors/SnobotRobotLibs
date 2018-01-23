@@ -7,16 +7,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.WaitCommand;
-import edu.wpi.first.wpilibj.tables.ITable;
 
 public abstract class ACommandParser
 {
-    protected final ITable mAutonTable;
-    protected final String mAutonSdCommandTextName;
-    protected final String mAutonSdCommandParsedTextName;
+    protected static final Logger sLOGGER = Logger.getLogger("ACommandParser");
+
+    protected final NetworkTableEntry mAutonSdTableTextName;
+    protected final NetworkTableEntry mAutonSdTableParsedTextName;
 
     protected final String mDelimiter;
     protected final String mCommentStart;
@@ -24,14 +28,25 @@ public abstract class ACommandParser
     protected String mErrorText;
     protected boolean mSuccess;
 
+    /**
+     * Constructor.
+     * 
+     * @param aAutonSdTableTextName
+     *            The property used to show the autonomous script
+     * @param aAutonSdTableParsedTextName
+     *            The property used to show if the script was succesfully parsed
+     *            (boolean)
+     * @param aDelimiter
+     *            The delimeter used between key words
+     * @param aCommentStart
+     *            The characters representing a line comment start
+     */
     public ACommandParser(
-            ITable aAutonTable,
-            String aAutonSdCommandTextName, String aAutonSdCommandParsedTextName,
+            NetworkTableEntry aAutonSdTableTextName, NetworkTableEntry aAutonSdTableParsedTextName,
             String aDelimiter, String aCommentStart)
     {
-        mAutonTable = aAutonTable;
-        mAutonSdCommandTextName = aAutonSdCommandTextName;
-        mAutonSdCommandParsedTextName = aAutonSdCommandParsedTextName;
+        mAutonSdTableTextName = aAutonSdTableTextName;
+        mAutonSdTableParsedTextName = aAutonSdTableParsedTextName;
         mDelimiter = aDelimiter;
         mCommentStart = aCommentStart;
 
@@ -68,27 +83,30 @@ public abstract class ACommandParser
             protected void end()
             {
                 super.end();
-                System.out.println("Command group '" + aName + "' finished!");
+                sLOGGER.log(Level.INFO, "Command group '" + aName + "' finished!");
             }
         };
     }
 
     /**
-     * Interprets a line as a Command and adds it to mCommands
+     * Interprets a line as a Command and adds it to mCommands.
      * 
-     * @param aLine
+     * @param aGroup
+     *            The command group to add the new command to
+     * @param line
      *            Line of text
-     * @param b
+     * @param aAddParallel
+     *            If the command should be added in parallel or series
      */
     protected void parseLine(CommandGroup aGroup, String aLine, boolean aAddParallel)
     {
-        aLine = aLine.trim();
-        if (aLine.isEmpty() || aLine.startsWith(mCommentStart))
+        String line = aLine.trim();
+        if (line.isEmpty() || line.startsWith(mCommentStart))
         {
             return;
         }
 
-        StringTokenizer tokenizer = new StringTokenizer(aLine, mDelimiter);
+        StringTokenizer tokenizer = new StringTokenizer(line, mDelimiter);
 
         List<String> args = new ArrayList<>();
 
@@ -117,39 +135,39 @@ public abstract class ACommandParser
     }
 
     /**
-     * Parses a parallel command (commands separated by '|'
+     * Parses a parallel command (commands separated by '|').
      * 
-     * @param args
+     * @param aArgs
      *            The list of arguments
      * @return The command group for the parallel command
      */
-    protected CommandGroup parseParallelCommand(List<String> args)
+    protected CommandGroup parseParallelCommand(List<String> aArgs)
     {
-        String parallel_line = "";
-        for (int i = 1; i < args.size(); ++i)
+        StringBuilder parallelLine = new StringBuilder();
+        for (int i = 1; i < aArgs.size(); ++i)
         {
-            parallel_line += args.get(i) + " ";
+            parallelLine.append(aArgs.get(i)).append(' ');
         }
 
-        String[] split_commands = parallel_line.split("\\|");
+        String[] splitCommands = parallelLine.toString().split("\\|");
         CommandGroup parallelCommands = new CommandGroup();
 
-        for (String this_line : split_commands)
+        for (String thisLine : splitCommands)
         {
-            parseLine(parallelCommands, this_line, true);
+            parseLine(parallelCommands, thisLine, true);
         }
 
         return parallelCommands;
     }
 
-    protected Command parseWaitCommand(List<String> args)
+    protected Command parseWaitCommand(List<String> aArgs)
     {
-        double time = Double.parseDouble(args.get(1));
+        double time = Double.parseDouble(aArgs.get(1));
         return new WaitCommand(time);
     }
 
     /**
-     * Reads the given file into autonomous commands
+     * Reads the given file into autonomous commands.
      * 
      * @param aFilePath
      *            The path to the file to read
@@ -161,7 +179,7 @@ public abstract class ACommandParser
 
         CommandGroup output = createNewCommandGroup(aFilePath);
 
-        String fileContents = "";
+        StringBuilder fileContents = new StringBuilder();
 
         File file = new File(aFilePath);
 
@@ -175,14 +193,14 @@ public abstract class ACommandParser
                 while ((line = br.readLine()) != null)
                 {
                     this.parseLine(output, line, false);
-                    fileContents += line + "\n";
+                    fileContents.append(line).append('\n');
                 }
 
                 br.close();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                e.printStackTrace();
+                sLOGGER.log(Level.ERROR, "", ex);
             }
         }
         else
@@ -190,12 +208,12 @@ public abstract class ACommandParser
             addError("File " + aFilePath + " not found!");
         }
 
-        publishParsingResults(fileContents);
+        publishParsingResults(fileContents.toString());
 
         return output;
     }
 
-    protected void publishParsingResults(String aCommandString)
+    protected void publishParsingResults(String aCommandString) // NOPMD
     {
         if (!mErrorText.isEmpty())
         {
@@ -203,9 +221,9 @@ public abstract class ACommandParser
             aCommandString += mErrorText;
         }
 
-        mAutonTable.putString(mAutonSdCommandTextName, aCommandString);
-        mAutonTable.putBoolean(mAutonSdCommandParsedTextName, mSuccess);
+        mAutonSdTableTextName.setString(aCommandString);
+        mAutonSdTableParsedTextName.setBoolean(mSuccess);
     }
 
-    protected abstract Command parseCommand(List<String> args);
+    protected abstract Command parseCommand(List<String> aArgs);
 }

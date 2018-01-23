@@ -53,12 +53,6 @@ public class TestPropertyManager extends BaseTest
 
         Assert.assertEquals(boolProp.getValue(), false);
         Assert.assertEquals(stringProp.getValue(), "");
-
-        // Should print out
-        PropertyManager.saveIfUpdated();
-
-        // Should NOT print out
-        PropertyManager.saveIfUpdated();
     }
 
 }

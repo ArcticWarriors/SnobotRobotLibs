@@ -13,63 +13,63 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 public class TestASnobot extends BaseTest
 {
 
-    private class TestLoggableModule implements ILoggableModule
+    private static class TestLoggableModule implements ILoggableModule
     {
 
         @Override
         public void initializeLogHeaders()
         {
-
+            // Nothing to do
         }
 
         @Override
         public void updateLog()
         {
-
+            // Nothing to do
         }
 
     }
 
-    private class TestSDModule implements ISmartDashboardUpdaterModule
+    private static class TestSDModule implements ISmartDashboardUpdaterModule
     {
 
         @Override
         public void updateSmartDashboard()
         {
-
+            // Nothing to do
         }
 
     }
 
-    private class TestControllable implements IControllableModule
+    private static class TestControllable implements IControllableModule
     {
 
         @Override
         public void control()
         {
-
+            // Nothing to do
         }
 
         @Override
         public void stop()
         {
-
+            // Nothing to do
         }
     }
 
-    private class TestUpdatable implements IUpdateableModule
+    private static class TestUpdatable implements IUpdateableModule
     {
 
         @Override
         public void update()
         {
-
+            // Nothing to do
         }
     }
     
-    private class TestSnobot extends ASnobot
+    private static class TestSnobot extends ASnobot
     {
-        public TestSnobot()
+        private TestSnobot()
         {
             TestLoggableModule loggable = new TestLoggableModule();
             addModule(loggable);
@@ -107,7 +107,6 @@ public class TestASnobot extends BaseTest
         snobot.testInit();
         snobot.testPeriodic();
         snobot.stop();
-        snobot.getLogger();
     }
 
 }

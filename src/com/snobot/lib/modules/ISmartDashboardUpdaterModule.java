@@ -4,7 +4,7 @@ public interface ISmartDashboardUpdaterModule
 {
 
     /**
-     * Updates information that is sent to SmartDashboard Takes Enum argument
+     * Updates information that is sent to SmartDashboard Takes Enum argument.
      */
     void updateSmartDashboard();
 }

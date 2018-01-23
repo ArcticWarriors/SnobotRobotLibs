@@ -4,7 +4,7 @@ import com.snobot.lib.vision.MjpegReceiver.ImageReceiver;
 
 public class MjpegForwarder implements ImageReceiver
 {
-    private int mBindPort;
+    private final int mBindPort;
 
     public MjpegForwarder(int aBindPort)
     {
@@ -13,9 +13,9 @@ public class MjpegForwarder implements ImageReceiver
     }
 
     @Override
-    public void onImage(byte[] imageBytes)
+    public void onImage(byte[] aImageBytes)
     {
-        MjpgServer.getInstance(mBindPort).update(imageBytes);
+        MjpgServer.getInstance(mBindPort).update(aImageBytes);
     }
 
 }

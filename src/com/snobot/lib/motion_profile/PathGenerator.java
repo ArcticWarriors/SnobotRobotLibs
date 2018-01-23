@@ -6,20 +6,15 @@ import java.util.List;
 import com.snobot.lib.motion_profile.PathSetpoint.TrapezoidSegment;
 
 /**
- * Class to generate a path, based on a {@link PathConfig}
+ * Class to generate a path, based on a {@link PathConfig}.
  * 
  * @author PJ
  *
  */
 public class PathGenerator
 {
-    public PathGenerator()
-    {
-
-    }
-
     /**
-     * Generates a list of setpoints for the given path config
+     * Generates a list of setpoints for the given path config.
      * 
      * @param aConfig
      *            The config to use to generate the path
@@ -54,7 +49,7 @@ public class PathGenerator
         double t1 = Math.sqrt(aPosition / aMaxAccel);
         double t2 = 2 * t1;
 
-        double max_velocity = t1 * aMaxAccel;
+        double maxVelocity = t1 * aMaxAccel;
 
         ArrayList<PathSetpoint> output = new ArrayList<>();
 
@@ -71,8 +66,8 @@ public class PathGenerator
 
         for (double t = t1; t < t2; t += aDt)
         {
-            pos = aPosition - .5 * aMaxAccel * Math.pow((t - (t2)), 2);
-            vel = max_velocity - aMaxAccel * (t - t1);
+            pos = aPosition - .5 * aMaxAccel * Math.pow(t - t2, 2);
+            vel = maxVelocity - aMaxAccel * (t - t1);
 
             PathSetpoint point = new PathSetpoint(TrapezoidSegment.Acceleration, aDt, pos, vel, aMaxAccel);
             output.add(point);
@@ -81,7 +76,7 @@ public class PathGenerator
         return output;
     }
 
-    private List<PathSetpoint> generateTrapeziodPath(double t1, double t2, double t3, double aMaxVelocity, double aMaxAccel, double aPosition,
+    private List<PathSetpoint> generateTrapeziodPath(double aT1, double aT2, double aT3, double aMaxVelocity, double aMaxAccel, double aPosition,
             double aDt)
     {
         ArrayList<PathSetpoint> output = new ArrayList<>();
@@ -89,7 +84,7 @@ public class PathGenerator
         double pos = 0.0;
         double vel = 0.0;
 
-        for (double t = 0; t < t1; t += aDt)
+        for (double t = 0; t < aT1; t += aDt)
         {
             pos = .5 * aMaxAccel * (t * t);
             vel = aMaxAccel * t;
@@ -98,7 +93,7 @@ public class PathGenerator
 
         }
 
-        for (double t = t1; t < t2; t += aDt)
+        for (double t = aT1; t < aT2; t += aDt)
         {
             pos = .5 * ((aMaxVelocity * aMaxVelocity) / aMaxAccel) + aMaxVelocity * (t - (aMaxVelocity / aMaxAccel));
             vel = aMaxVelocity;
@@ -106,9 +101,9 @@ public class PathGenerator
             output.add(point);
         }
 
-        for (double t = t2; t < t3; t += aDt)
+        for (double t = aT2; t < aT3; t += aDt)
         {
-            pos = aPosition - .5 * aMaxAccel * Math.pow((t - (t1 + t2)), 2);
+            pos = aPosition - .5 * aMaxAccel * Math.pow(t - (aT1 + aT2), 2);
             vel = aMaxAccel * ((aMaxVelocity / aMaxAccel) + (aPosition / aMaxVelocity) - t);
             PathSetpoint point = new PathSetpoint(TrapezoidSegment.Deceleration, aDt, pos, vel, -aMaxAccel);
             output.add(point);

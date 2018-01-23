@@ -4,17 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 /**
- * Serializes a 2D cubic spline into a string, to be used by the SmartDashboard
+ * Serializes a 2D cubic spline into a string, to be used by the SmartDashboard.
  * 
  * @author PJ
  *
  */
-public class IdealSplineSerializer
+public final class IdealSplineSerializer
 {
+    private static final Logger sLOGGER = Logger.getLogger("IdealPlotSerializer");
 
     /**
-     * Constructor, private because the static functions should be used
+     * Constructor, private because the static functions should be used.
      */
     private IdealSplineSerializer()
     {
@@ -22,7 +26,7 @@ public class IdealSplineSerializer
     }
 
     /**
-     * De-Serializes a list of spline segments from the given string
+     * De-Serializes a list of spline segments from the given string.
      * 
      * @param aString
      *            The string to de-serialize
@@ -44,7 +48,7 @@ public class IdealSplineSerializer
     }
 
     /**
-     * Serializes a path of spline points into a string
+     * Serializes a path of spline points into a string.
      * 
      * @param aPoints
      *            The list of points
@@ -64,7 +68,7 @@ public class IdealSplineSerializer
     }
 
     /**
-     * Serializes a single spline point
+     * Serializes a single spline point.
      * 
      * @param aPoint
      *            The piont to serialize
@@ -73,8 +77,7 @@ public class IdealSplineSerializer
      */
     public static String serializePathPoint(SplineSegment aPoint)
     {
-        return ""
-                + aPoint.mLeftSidePosition + ", "
+        return aPoint.mLeftSidePosition + ", "
                 + aPoint.mLeftSideVelocity + ", "
                 + aPoint.mRightSidePosition + ", "
                 + aPoint.mRightSideVelocity + ", "
@@ -84,30 +87,30 @@ public class IdealSplineSerializer
     }
 
     /**
-     * De-serializes a spline point from the given string
+     * De-serializes a spline point from the given string.
      * 
-     * @param tokenizer
+     * @param aTokenizer
      *            The tokenizer containing the point to parse
      * 
      * @return The de-serialized point
      */
-    public static SplineSegment deserializePathPoint(StringTokenizer tokenizer)
+    public static SplineSegment deserializePathPoint(StringTokenizer aTokenizer)
     {
         SplineSegment point = new SplineSegment();
 
         try
         {
-            point.mLeftSidePosition = Double.parseDouble(tokenizer.nextToken());
-            point.mLeftSideVelocity = Double.parseDouble(tokenizer.nextToken());
-            point.mRightSidePosition = Double.parseDouble(tokenizer.nextToken());
-            point.mRightSideVelocity = Double.parseDouble(tokenizer.nextToken());
-            point.mRobotHeading = Double.parseDouble(tokenizer.nextToken());
-            point.mAverageX = Double.parseDouble(tokenizer.nextToken());
-            point.mAverageY = Double.parseDouble(tokenizer.nextToken());
+            point.mLeftSidePosition = Double.parseDouble(aTokenizer.nextToken());
+            point.mLeftSideVelocity = Double.parseDouble(aTokenizer.nextToken());
+            point.mRightSidePosition = Double.parseDouble(aTokenizer.nextToken());
+            point.mRightSideVelocity = Double.parseDouble(aTokenizer.nextToken());
+            point.mRobotHeading = Double.parseDouble(aTokenizer.nextToken());
+            point.mAverageX = Double.parseDouble(aTokenizer.nextToken());
+            point.mAverageY = Double.parseDouble(aTokenizer.nextToken());
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            e.printStackTrace();
+            sLOGGER.log(Level.ERROR, "", ex);
         }
 
         return point;

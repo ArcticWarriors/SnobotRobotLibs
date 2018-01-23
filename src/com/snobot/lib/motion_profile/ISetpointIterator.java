@@ -3,7 +3,7 @@ package com.snobot.lib.motion_profile;
 import java.util.List;
 
 /**
- * Interface used to get a list of setpoints used to move a path
+ * Interface used to get a list of setpoints used to move a path.
  * 
  * @author PJ
  *
@@ -11,7 +11,7 @@ import java.util.List;
 public interface ISetpointIterator
 {
     /**
-     * Gets the next setpoint to drive to for the current iteration
+     * Gets the next setpoint to drive to for the current iteration.
      * 
      * @param aPosition
      *            The current position (distance or angle) of the robot
@@ -26,17 +26,17 @@ public interface ISetpointIterator
     PathSetpoint getNextSetpoint(double aPosition, double aVelocity, double aDt);
 
     /**
-     * Indicates that you are finished with the list
+     * Indicates that you are finished with the list.
      * 
      * @return True if finished, false otherwise
      */
-    public boolean isFinished();
+    boolean isFinished();
 
     /**
      * Gets the ideal path. That is, the path calculated based on the PathConfig
-     * used to construct the iterator
+     * used to construct the iterator.
      * 
      * @return The ideal path
      */
-    public List<PathSetpoint> getIdealPath();
+    List<PathSetpoint> getIdealPath();
 }

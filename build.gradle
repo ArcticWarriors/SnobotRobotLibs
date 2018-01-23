@@ -1,24 +1,34 @@
-
-apply plugin: 'java'
-apply plugin: 'jacoco'
-apply plugin: 'eclipse'
-
-
-def snobotSimVersion = "0.2"
-
-repositories
-{
-    maven {
-        name = "WPI"
-        url = "http://first.wpi.edu/FRC/roborio/maven/release"
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
-    maven {
-        url "https://plugins.gradle.org/m2/"
-    }
-    maven {
-        url "http://raw.githubusercontent.com/pjreiniger/maven_repo/master/"
-    }
- }
+}
+
+plugins {
+    id "java"
+    id "eclipse"
+    id "idea"
+    id "jacoco"
+    id "checkstyle"
+    id "pmd"
+    id "findbugs"
+    id "jaci.openrio.gradle.GradleRIO" version "2018.01.21"
+    id "com.snobot.simulator.plugin.SnobotSimulatorPlugin" version "2018.01.10"
+}
+
+apply plugin: com.snobot.simulator.plugin.SnobotSimulatorPlugin
+snobotSimVersions {
+    snobotSimVersion = "0.7.3"
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
 
 sourceSets {
     main {
@@ -38,22 +48,52 @@ sourceSets {
 
 dependencies {
 
-    compile 'edu.wpi.first.wpilib.networktables.java:NetworkTables:3.1.7:desktop'
-    compile 'edu.wpi.first.wpilibj:athena:2017.3.1'
+    compile wpilib()
+    compile ctre()
+    
+    compile 'log4j:log4j:1.2.16'
+    
+    // Third Party without maven
     compile files('dependencies/RIOdroid.jar')
+    
+    // Simulator
+    testCompile snobotSimCompile()
+    testCompile snobotSimJavaCompile()
     
     // Testing
     testCompile 'junit:junit:4.12'
-    testRuntime 'log4j:log4j:1.2.16'
-    testCompile 'com.snobot.simulator:snobot_sim_gui:'  + snobotSimVersion + ':all'
-    testCompile 'com.snobot.simulator:snobot_sim_java:' + snobotSimVersion + ':uber_native-linux'
-    testCompile 'com.snobot.simulator:snobot_sim_java:' + snobotSimVersion + ':uber_native-windows'
 }
 
 test {
 	ignoreFailures = true
 }
 
+//////////////////////////////
+// Style/Formatting stuff
+checkstyle {
+    toolVersion = "8.1"
+    configFile = new File(rootDir, "styleguide/checkstyle.xml")
+}
+
+pmd {
+    consoleOutput  = true
+    reportsDir = file("${project.buildDir}/reports/pmd")
+    ruleSetFiles = files(file("$rootDir/styleguide/pmd-ruleset.xml"))
+    ruleSets = []
+}
+
+findbugs {
+    excludeFilter = file("$rootDir/styleguide/findbugs_suppressions.xml")
+    effort = "max"
+    ignoreFailures = true
+}
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
+}
+//////////////////////////////
 
 jacocoTestReport {
     reports {
@@ -77,5 +117,5 @@ jacocoTestReport {
 
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.1'
+    gradleVersion = '4.2.1'
 }

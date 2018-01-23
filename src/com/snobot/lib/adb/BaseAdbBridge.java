@@ -1,11 +1,11 @@
 package com.snobot.lib.adb;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 public abstract class BaseAdbBridge implements IAdbBridge
 {
-    protected static final Logger sLOGGER = Logger.getLogger("AdbBridge");
+    protected static final Logger sLOGGER = Logger.getLogger(BaseAdbBridge.class);
 
     protected final String mAppPackage;
     protected final String mAppActivity;
@@ -36,19 +36,19 @@ public abstract class BaseAdbBridge implements IAdbBridge
     }
 
     @Override
-    public void portForward(int local_port, int remote_port)
+    public void portForward(int aLocalPort, int aRemotePort)
     {
-        runCommand("forward tcp:" + local_port + " tcp:" + remote_port);
+        runCommand("forward tcp:" + aLocalPort + " tcp:" + aRemotePort);
     }
 
     @Override
-    public void reversePortForward(int remote_port, int local_port)
+    public void reversePortForward(int aRemotePort, int aLocalPort)
     {
-        runCommand("reverse tcp:" + remote_port + " tcp:" + local_port);
+        runCommand("reverse tcp:" + aRemotePort + " tcp:" + aLocalPort);
     }
 
     /**
-     * Runs a command through the ADB
+     * Runs a command through the ADB.
      * 
      * @param aCommand
      *            The command to run. Does not include 'adb'

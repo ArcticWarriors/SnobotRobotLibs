@@ -18,16 +18,19 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 public abstract class ASnobot extends IterativeRobot implements ISubsystem
 {
 
-    private List<IUpdateableModule> mUpdateableModules;
-    private List<IControllableModule> mControllableModules;
-    private List<ILoggableModule> mLoggableModules;
-    private List<ISmartDashboardUpdaterModule> mSmartDashboardModules;
+    private final List<IUpdateableModule> mUpdateableModules;
+    private final List<IControllableModule> mControllableModules;
+    private final List<ILoggableModule> mLoggableModules;
+    private final List<ISmartDashboardUpdaterModule> mSmartDashboardModules;
 
-    private Logger mLogger;
+    private final Logger mLogger; // NOPMD
 
     // Autonomous
     private CommandGroup mAutonCommand;
 
+    /**
+     * Constructor.
+     */
     public ASnobot()
     {
         mUpdateableModules = new ArrayList<>();
@@ -59,9 +62,6 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
 
     }
 
-    /**
-     * This function is called periodically during autonomous
-     */
     @Override
     public void autonomousPeriodic()
     {
@@ -94,9 +94,6 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
         }
     }
 
-    /**
-     * This function is called periodically during operator control
-     */
     @Override
     public void teleopPeriodic()
     {
@@ -109,7 +106,6 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
     @Override
     public void disabledInit()
     {
-        PropertyManager.saveIfUpdated();
         mLogger.flush();
     }
 
@@ -123,9 +119,9 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
     public void initializeLogHeaders()
     {
         mLogger.initializeLogger();
-        for (ILoggableModule iSubsystem : mLoggableModules)
+        for (ILoggableModule subsystem : mLoggableModules)
         {
-            iSubsystem.initializeLogHeaders();
+            subsystem.initializeLogHeaders();
         }
         mLogger.endHeader();
         mAutonCommand = createAutonomousCommand();
@@ -134,9 +130,9 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
     @Override
     public void update()
     {
-        for (IUpdateableModule iSubsystem : mUpdateableModules)
+        for (IUpdateableModule subsystem : mUpdateableModules)
         {
-            iSubsystem.update();
+            subsystem.update();
 
         }
     }
@@ -144,9 +140,9 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
     @Override
     public void control()
     {
-        for (IControllableModule iSubsystem : mControllableModules)
+        for (IControllableModule subsystem : mControllableModules)
         {
-            iSubsystem.control();
+            subsystem.control();
         }
     }
 
@@ -157,9 +153,9 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
         {
             mLogger.startRow();
 
-            for (ILoggableModule iSubsystem : mLoggableModules)
+            for (ILoggableModule subsystem : mLoggableModules)
             {
-                iSubsystem.updateLog();
+                subsystem.updateLog();
             }
             mLogger.endRow();
         }
@@ -169,28 +165,19 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
     @Override
     public void updateSmartDashboard()
     {
-        for (ISmartDashboardUpdaterModule iSubsystem : mSmartDashboardModules)
+        for (ISmartDashboardUpdaterModule subsystem : mSmartDashboardModules)
         {
-            iSubsystem.updateSmartDashboard();
+            subsystem.updateSmartDashboard();
         }
     }
 
     @Override
     public void stop()
     {
-        for (IControllableModule iSubsystem : mControllableModules)
+        for (IControllableModule subsystem : mControllableModules)
         {
-            iSubsystem.stop();
+            subsystem.stop();
         }
-    }
-
-    /**
-     * This function is called periodically during test mode
-     */
-    @Override
-    public void testPeriodic()
-    {
-
     }
 
     protected ILogger getLogger()
