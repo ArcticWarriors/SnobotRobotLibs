@@ -19,6 +19,20 @@ public class TrajectoryGenerator
         public double max_acc;
         public double max_jerk;
         public boolean isBackwards;
+
+        public Config()
+        {
+            this(.02, 60, 120, 60, false);
+        }
+
+        public Config(double aDt, double aMaxVel, double aMaxAccel, double aMaxJerk, boolean aIsBackwards)
+        {
+            dt = aDt;
+            max_vel = aMaxVel;
+            max_acc = aMaxAccel;
+            max_jerk = aMaxJerk;
+            isBackwards = aIsBackwards;
+        }
     }
 
     public static class Strategy

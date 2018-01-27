@@ -1,7 +1,10 @@
 package com.team254.lib.trajectory.gen;
 
+import java.util.List;
+
 import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.Trajectory;
+import com.team254.lib.trajectory.Waypoint;
 
 /**
  * Generate a smooth Trajectory from a Path.
@@ -26,19 +29,19 @@ public class PathGenerator
      *            The name of the new path. THIS MUST BE A VALID JAVA CLASS NAME
      * @return The path.
      */
-    public static Path makePath(WaypointSequence waypoints, TrajectoryGenerator.Config config, double wheelbase_width, String name)
+    public static Path makePath(List<Waypoint> waypoints, TrajectoryGenerator.Config config, double wheelbase_width, String name)
     {
-        return new Path(name, generateLeftAndRightFromSeq(waypoints, config, wheelbase_width));
+        return new Path(name, waypoints, generateLeftAndRightFromSeq(waypoints, config, wheelbase_width));
     }
 
-    static Trajectory.WheelPair generateLeftAndRightFromSeq(WaypointSequence path, TrajectoryGenerator.Config config, double wheelbase_width)
+    static Trajectory.WheelPair generateLeftAndRightFromSeq(List<Waypoint> path, TrajectoryGenerator.Config config, double wheelbase_width)
     {
         return makeLeftAndRightTrajectories(generateFromPath(path, config), wheelbase_width);
     }
 
-    static Trajectory generateFromPath(WaypointSequence path, TrajectoryGenerator.Config config)
+    static Trajectory generateFromPath(List<Waypoint> path, TrajectoryGenerator.Config config)
     {
-        if (path.getNumWaypoints() < 2)
+        if (path.size() < 2)
         {
             return null;
         }
@@ -46,13 +49,13 @@ public class PathGenerator
         // Compute the total length of the path by creating splines for each
         // pair
         // of waypoints.
-        Spline[] splines = new Spline[path.getNumWaypoints() - 1];
+        Spline[] splines = new Spline[path.size() - 1];
         double[] spline_lengths = new double[splines.length];
         double total_distance = 0;
         for (int i = 0; i < splines.length; ++i)
         {
             splines[i] = new Spline();
-            if (!Spline.reticulateSplines(path.getWaypoint(i), path.getWaypoint(i + 1), splines[i], Spline.QuinticHermite))
+            if (!Spline.reticulateSplines(path.get(i), path.get(i + 1), splines[i], Spline.QuinticHermite))
             {
                 return null;
             }
@@ -61,8 +64,8 @@ public class PathGenerator
         }
 
         // Generate a smooth trajectory over the total distance.
-        Trajectory traj = TrajectoryGenerator.generate(config, TrajectoryGenerator.SCurvesStrategy, 0.0, path.getWaypoint(0).theta, total_distance,
-                0.0, path.getWaypoint(0).theta);
+        Trajectory traj = TrajectoryGenerator.generate(config, TrajectoryGenerator.SCurvesStrategy, 0.0, path.get(0).theta, total_distance,
+                0.0, path.get(0).theta);
 
         // Assign headings based on the splines.
         int cur_spline = 0;

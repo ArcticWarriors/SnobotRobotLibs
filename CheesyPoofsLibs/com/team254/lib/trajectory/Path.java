@@ -1,5 +1,7 @@
 package com.team254.lib.trajectory;
 
+import java.util.List;
+
 import com.team254.lib.trajectory.Trajectory.Segment;
 
 /**
@@ -9,18 +11,29 @@ import com.team254.lib.trajectory.Trajectory.Segment;
  */
 public class Path
 {
-    protected Trajectory.WheelPair mWheelPair;
-    protected String mName;
-
-    public Path(String name, Trajectory.WheelPair go_left_pair)
+    public static class PathConfig
     {
-        mName = name;
-        mWheelPair = go_left_pair;
+    }
+
+    protected final Trajectory.WheelPair mWheelPair;
+    protected final List<Waypoint> mPathConfig;
+    protected final String mName;
+
+    public Path(String aName, List<Waypoint> aPathConfig, Trajectory.WheelPair aWheelPair)
+    {
+        mName = aName;
+        mWheelPair = aWheelPair;
+        mPathConfig = aPathConfig;
     }
 
     public String getName()
     {
         return mName;
+    }
+
+    public List<Waypoint> getPathConfig()
+    {
+        return mPathConfig;
     }
 
     public Trajectory getLeftWheelTrajectory()

@@ -4,10 +4,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.Trajectory;
+import com.team254.lib.trajectory.Waypoint;
 
 /**
  *
@@ -60,7 +63,16 @@ public class TextFileDeserializer implements IPathDeserializer
             left.setSegment(i, segment);
         }
 
-        return new Path(name, new Trajectory.WheelPair(left, right));
+        List<Waypoint> waypoints = new ArrayList<>();
+
+        return new Path(name, waypoints, new Trajectory.WheelPair(left, right));
+    }
+
+    private List<Waypoint> getWaypointConfig(StringTokenizer tokenizer)
+    {
+        List<Waypoint> output = new ArrayList<>();
+
+        return output;
     }
 
     public Path deserializeFromFile(String aFilename)
