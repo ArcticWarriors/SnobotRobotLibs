@@ -4,10 +4,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.Trajectory;
+import com.team254.lib.trajectory.Waypoint;
 
 /**
  *
@@ -21,6 +24,9 @@ public class TextFileDeserializer implements IPathDeserializer
         StringTokenizer tokenizer = new StringTokenizer(serialized, "\n");
 
         String name = tokenizer.nextToken();
+
+        List<Waypoint> waypoints = getWaypointConfig(tokenizer);
+
         int num_elements = Integer.parseInt(tokenizer.nextToken());
 
         // Flipped on purpose
@@ -60,7 +66,29 @@ public class TextFileDeserializer implements IPathDeserializer
             left.setSegment(i, segment);
         }
 
-        return new Path(name, new Trajectory.WheelPair(left, right));
+
+        return new Path(name, waypoints, new Trajectory.WheelPair(left, right));
+    }
+
+    private List<Waypoint> getWaypointConfig(StringTokenizer tokenizer)
+    {
+        List<Waypoint> output = new ArrayList<>();
+
+        int numWaypoints = Integer.parseInt(tokenizer.nextToken());
+
+        for (int i = 0; i < numWaypoints; ++i)
+        {
+            StringTokenizer partsTokenizer = new StringTokenizer(tokenizer.nextToken(), ",");
+            double x = Double.parseDouble(partsTokenizer.nextToken());
+            double y = Double.parseDouble(partsTokenizer.nextToken());
+            double angle = Double.parseDouble(partsTokenizer.nextToken());
+
+            Waypoint waypoint = new Waypoint(x, y, angle);
+            output.add(waypoint);
+
+        }
+
+        return output;
     }
 
     public Path deserializeFromFile(String aFilename)

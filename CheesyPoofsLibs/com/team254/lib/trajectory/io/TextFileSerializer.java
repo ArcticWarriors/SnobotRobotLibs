@@ -1,8 +1,11 @@
 package com.team254.lib.trajectory.io;
 
+import java.util.List;
+
 import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.Trajectory.Segment;
+import com.team254.lib.trajectory.Waypoint;
 
 /**
  * Serializes a Path to a simple space and CR separated text file.
@@ -25,9 +28,22 @@ public class TextFileSerializer
     public String serialize(Path path)
     {
         String content = path.getName() + "\n";
+        content += serializeWaypointConfig(path.getPathConfig());
         content += path.getLeftWheelTrajectory().getNumSegments() + "\n";
         content += serializeTrajectory(path.getLeftWheelTrajectory());
         content += serializeTrajectory(path.getRightWheelTrajectory());
+        return content;
+    }
+    
+    private String serializeWaypointConfig(List<Waypoint> aWaypointConfig)
+    {
+        String content = aWaypointConfig.size() + "\n";
+        
+        for (Waypoint waypoint : aWaypointConfig)
+        {
+            content += waypoint.x + "," + waypoint.y + "," + Math.toDegrees(waypoint.theta) + "\n";
+        }
+
         return content;
     }
 

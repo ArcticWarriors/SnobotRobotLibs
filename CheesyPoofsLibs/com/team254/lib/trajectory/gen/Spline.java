@@ -1,5 +1,7 @@
 package com.team254.lib.trajectory.gen;
 
+import com.team254.lib.trajectory.Waypoint;
+
 /**
  * Do cubic spline interpolation between points.
  *
@@ -61,7 +63,7 @@ public class Spline
         return Math.abs(x - y) < 1E-6;
     }
 
-    public static boolean reticulateSplines(WaypointSequence.Waypoint start, WaypointSequence.Waypoint goal, Spline result, Type type)
+    public static boolean reticulateSplines(Waypoint start, Waypoint goal, Spline result, Type type)
     {
         return reticulateSplines(start.x, start.y, start.theta, goal.x, goal.y, goal.theta, result, type);
     }
