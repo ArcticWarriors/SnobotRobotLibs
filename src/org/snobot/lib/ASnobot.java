@@ -26,7 +26,7 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
     private final Logger mLogger; // NOPMD
 
     // Autonomous
-    private CommandGroup mAutonCommand;
+    protected CommandGroup mAutonCommand;
 
     /**
      * Constructor.
@@ -76,6 +76,11 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
     @Override
     public void autonomousInit()
     {
+        if (mAutonCommand != null)
+        {
+            mAutonCommand.cancel();
+        }
+
         mAutonCommand = createAutonomousCommand();
 
         if (mAutonCommand != null)
