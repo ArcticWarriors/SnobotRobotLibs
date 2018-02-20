@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.command.WaitCommand;
 
 public abstract class ACommandParser
 {
-    protected static final Logger sLOGGER = Logger.getLogger("ACommandParser");
+    protected static final Logger sLOGGER = Logger.getLogger(ACommandParser.class);
 
     protected final NetworkTableEntry mAutonSdTableTextName;
     protected final NetworkTableEntry mAutonSdTableParsedTextName;
@@ -59,6 +59,8 @@ public abstract class ACommandParser
         // Put the '#' so we can pretend like the error text is a comment
         mErrorText += mCommentStart + aError + "\n";
         mSuccess = false;
+
+        sLOGGER.log(Level.ERROR, aError);
     }
 
     protected void initReading()
@@ -175,6 +177,7 @@ public abstract class ACommandParser
      */
     public CommandGroup readFile(String aFilePath)
     {
+        sLOGGER.log(Level.INFO, "Loading autonomous " + aFilePath);
         initReading();
 
         CommandGroup output = createNewCommandGroup(aFilePath);
@@ -223,6 +226,11 @@ public abstract class ACommandParser
 
         mAutonSdTableTextName.setString(aCommandString);
         mAutonSdTableParsedTextName.setBoolean(mSuccess);
+    }
+
+    public boolean wasParsingSuccesful()
+    {
+        return mSuccess;
     }
 
     protected abstract Command parseCommand(List<String> aArgs);
