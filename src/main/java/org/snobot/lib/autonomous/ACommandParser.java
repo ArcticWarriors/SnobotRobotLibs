@@ -7,8 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.command.Command;
@@ -17,7 +18,7 @@ import edu.wpi.first.wpilibj.command.WaitCommand;
 
 public abstract class ACommandParser
 {
-    protected static final Logger sLOGGER = Logger.getLogger("ACommandParser");
+    protected static final Logger sLOGGER = LogManager.getLogger("ACommandParser");
 
     protected final NetworkTableEntry mAutonSdTableTextName;
     protected final NetworkTableEntry mAutonSdTableParsedTextName;

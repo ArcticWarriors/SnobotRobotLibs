@@ -11,12 +11,13 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class SnobotAutonCrawler extends SimpleFileVisitor<Path>
 {
-    private static final Logger sLOGGER = Logger.getLogger("SnobotAutonCrawler");
+    private static final Logger sLOGGER = LogManager.getLogger("SnobotAutonCrawler");
 
     private final List<Path> mPaths;
     private final String mIgnoreString;

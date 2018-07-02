@@ -1,6 +1,6 @@
 package org.snobot.lib;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.snobot.lib.modules.IControllableModule;
 import org.snobot.lib.modules.ILoggableModule;
 import org.snobot.lib.modules.ISmartDashboardUpdaterModule;

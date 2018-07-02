@@ -1,6 +1,6 @@
 package org.snobot.lib.adb;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import org.spectrum3847.RIOdroid.RIOdroid;
 
 public class RioDroidAdbBridge extends BaseAdbBridge

@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Class able to serialize and de-serialize a list of points into a string. Used
@@ -16,7 +17,7 @@ import org.apache.log4j.Logger;
  */
 public final class IdealPlotSerializer
 {
-    private static final Logger sLOGGER = Logger.getLogger("IdealPlotSerializer");
+    private static final Logger sLOGGER = LogManager.getLogger("IdealPlotSerializer");
 
     /**
      * Constructor, private because they should be using the static functions.

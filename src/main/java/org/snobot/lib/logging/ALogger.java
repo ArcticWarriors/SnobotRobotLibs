@@ -6,13 +6,14 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class ALogger implements ILogger
 {
 
-    protected static final Logger sLOGGER = Logger.getLogger("ALogger");
+    protected static final Logger sLOGGER = LogManager.getLogger("ALogger");
 
     private FileWriter mLogWriter;
     private String mLogFilePath;

@@ -3,7 +3,7 @@ package org.snobot.lib.logging;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestLogger
 {

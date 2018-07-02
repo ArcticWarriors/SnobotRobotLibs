@@ -6,12 +6,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class MjpgServer
 {
-    private static final Logger sLOGGER = Logger.getLogger("MjpgServer");
+    private static final Logger sLOGGER = LogManager.getLogger("MjpgServer");
     private static final String K_BOUNDARY = "boundary";
     private static final int sDEFAULT_PORT = 5800;
 

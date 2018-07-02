@@ -8,12 +8,13 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class RobotConnectionServer
 {
-    protected static final Logger sLOGGER = Logger.getLogger("RobotConnectionServer");
+    protected static final Logger sLOGGER = LogManager.getLogger("RobotConnectionServer");
 
     private ServerSocket mServerSocket;
     private boolean mIsConnected = false;

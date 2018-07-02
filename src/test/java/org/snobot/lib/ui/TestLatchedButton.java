@@ -1,7 +1,7 @@
 package org.snobot.lib.ui;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestLatchedButton
 {
@@ -11,17 +11,17 @@ public class TestLatchedButton
     {
         LatchedButton btn = new LatchedButton();
 
-        Assert.assertFalse(btn.getState());
-        Assert.assertFalse(btn.update(false));
-        Assert.assertTrue(btn.update(true));
-        Assert.assertTrue(btn.getState());
+        Assertions.assertFalse(btn.getState());
+        Assertions.assertFalse(btn.update(false));
+        Assertions.assertTrue(btn.update(true));
+        Assertions.assertTrue(btn.getState());
 
         // Continue to issue true
-        Assert.assertFalse(btn.update(true));
-        Assert.assertFalse(btn.getState());
+        Assertions.assertFalse(btn.update(true));
+        Assertions.assertFalse(btn.getState());
 
         // Reset it back to false (released)
-        Assert.assertFalse(btn.update(false));
-        Assert.assertFalse(btn.getState());
+        Assertions.assertFalse(btn.update(false));
+        Assertions.assertFalse(btn.getState());
     }
 }

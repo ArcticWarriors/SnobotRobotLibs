@@ -9,12 +9,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class MjpegReceiver
 {
-    protected static final Logger sLOGGER = Logger.getLogger("MjpegReceiver");
+    protected static final Logger sLOGGER = LogManager.getLogger("MjpegReceiver");
 
     private static final int[] START_BYTES = new int[]{ 0xFF, 0xD8 };
     private static final byte[] END_BYTES = "--boundary".getBytes();

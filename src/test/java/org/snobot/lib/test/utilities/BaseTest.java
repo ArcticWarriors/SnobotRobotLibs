@@ -1,6 +1,6 @@
 package org.snobot.lib.test.utilities;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 import com.snobot.simulator.DefaultDataAccessorFactory;
 import com.snobot.simulator.wrapper_accessors.DataAccessorFactory;
@@ -12,7 +12,10 @@ public class BaseTest
 {
     private static boolean INITIALIZED = false;
 
-    @Before
+    /**
+     * Called before each unit test is run.
+     */
+    @BeforeEach
     public void setup()
     {
         if (!INITIALIZED)
