@@ -1,0 +1,16 @@
+version: 1.0.{build}
+image: Visual Studio 2015
+
+platform:
+- x86
+- x64
+
+build_script:
+- cmd: gradlew.bat build jacocoTestReport
+    
+after_build:
+- cmd: "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
+- cmd: pip install codecov
+- cmd: cd ../..
+- cmd: dir
+- cmd: codecov -f "RobotCode/snobot2018/build/reports/jacoco/test/jacocoTestReport.xml"
