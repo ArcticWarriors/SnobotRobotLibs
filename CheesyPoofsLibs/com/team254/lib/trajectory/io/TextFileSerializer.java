@@ -43,7 +43,7 @@ public class TextFileSerializer
         {
             content += waypoint.x + "," + waypoint.y + "," + Math.toDegrees(waypoint.theta) + "\n";
         }
-        
+
         return content;
     }
 

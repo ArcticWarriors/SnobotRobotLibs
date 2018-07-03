@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.command.WaitCommand;
 
 public abstract class ACommandParser
 {
-    protected static final Logger sLOGGER = LogManager.getLogger("ACommandParser");
+    protected static final Logger sLOGGER = LogManager.getLogger(ACommandParser.class);
 
     protected final NetworkTableEntry mAutonSdTableTextName;
     protected final NetworkTableEntry mAutonSdTableParsedTextName;

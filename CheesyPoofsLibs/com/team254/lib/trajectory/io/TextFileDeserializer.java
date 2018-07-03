@@ -66,6 +66,7 @@ public class TextFileDeserializer implements IPathDeserializer
             left.setSegment(i, segment);
         }
 
+
         return new Path(name, waypoints, new Trajectory.WheelPair(left, right));
     }
 
