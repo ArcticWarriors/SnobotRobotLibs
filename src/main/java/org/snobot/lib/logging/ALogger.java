@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 public abstract class ALogger implements ILogger
 {
 
-    protected static final Logger sLOGGER = LogManager.getLogger("ALogger");
+    protected static final Logger sLOGGER = LogManager.getLogger(ALogger.class);
 
     private FileWriter mLogWriter;
     private String mLogFilePath;

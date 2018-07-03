@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class RobotConnectionServer
 {
-    protected static final Logger sLOGGER = LogManager.getLogger("RobotConnectionServer");
+    protected static final Logger sLOGGER = LogManager.getLogger(RobotConnectionServer.class);
 
     private ServerSocket mServerSocket;
     private boolean mIsConnected = false;

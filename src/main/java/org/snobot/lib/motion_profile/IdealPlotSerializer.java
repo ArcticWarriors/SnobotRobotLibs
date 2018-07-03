@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
  */
 public final class IdealPlotSerializer
 {
-    private static final Logger sLOGGER = LogManager.getLogger("IdealPlotSerializer");
+    private static final Logger sLOGGER = LogManager.getLogger(IdealPlotSerializer.class);
 
     /**
      * Constructor, private because they should be using the static functions.

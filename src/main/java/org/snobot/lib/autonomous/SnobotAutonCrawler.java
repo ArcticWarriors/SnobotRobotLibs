@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 
 public final class SnobotAutonCrawler extends SimpleFileVisitor<Path>
 {
-    private static final Logger sLOGGER = LogManager.getLogger("SnobotAutonCrawler");
+    private static final Logger sLOGGER = LogManager.getLogger(SnobotAutonCrawler.class);
 
     private final List<Path> mPaths;
     private final String mIgnoreString;
