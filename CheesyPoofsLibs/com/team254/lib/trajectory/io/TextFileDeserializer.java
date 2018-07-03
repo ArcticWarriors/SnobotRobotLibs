@@ -24,6 +24,9 @@ public class TextFileDeserializer implements IPathDeserializer
         StringTokenizer tokenizer = new StringTokenizer(serialized, "\n");
 
         String name = tokenizer.nextToken();
+
+        List<Waypoint> waypoints = getWaypointConfig(tokenizer);
+
         int num_elements = Integer.parseInt(tokenizer.nextToken());
 
         // Flipped on purpose
@@ -63,14 +66,26 @@ public class TextFileDeserializer implements IPathDeserializer
             left.setSegment(i, segment);
         }
 
-        List<Waypoint> waypoints = new ArrayList<>();
-
         return new Path(name, waypoints, new Trajectory.WheelPair(left, right));
     }
 
     private List<Waypoint> getWaypointConfig(StringTokenizer tokenizer)
     {
         List<Waypoint> output = new ArrayList<>();
+
+        int numWaypoints = Integer.parseInt(tokenizer.nextToken());
+
+        for (int i = 0; i < numWaypoints; ++i)
+        {
+            StringTokenizer partsTokenizer = new StringTokenizer(tokenizer.nextToken(), ",");
+            double x = Double.parseDouble(partsTokenizer.nextToken());
+            double y = Double.parseDouble(partsTokenizer.nextToken());
+            double angle = Double.parseDouble(partsTokenizer.nextToken());
+
+            Waypoint waypoint = new Waypoint(x, y, angle);
+            output.add(waypoint);
+
+        }
 
         return output;
     }
