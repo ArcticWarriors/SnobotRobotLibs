@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 public class MjpgServer
 {
-    private static final Logger sLOGGER = LogManager.getLogger("MjpgServer");
+    private static final Logger sLOGGER = LogManager.getLogger(MjpgServer.class);
     private static final String K_BOUNDARY = "boundary";
     private static final int sDEFAULT_PORT = 5800;
 

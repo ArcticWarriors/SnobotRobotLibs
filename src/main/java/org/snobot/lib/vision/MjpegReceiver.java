@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 public class MjpegReceiver
 {
-    protected static final Logger sLOGGER = LogManager.getLogger("MjpegReceiver");
+    protected static final Logger sLOGGER = LogManager.getLogger(MjpegReceiver.class);
 
     private static final int[] START_BYTES = new int[]{ 0xFF, 0xD8 };
     private static final byte[] END_BYTES = "--boundary".getBytes();
