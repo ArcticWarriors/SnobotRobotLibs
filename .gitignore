@@ -1,9 +1,11 @@
 /bin/
 /build
 .gradle/
+.settings/
 
 /temp
 *RobotLog*.csv
+target/rolling/**
 
 # Eclipse projects
 .settings/

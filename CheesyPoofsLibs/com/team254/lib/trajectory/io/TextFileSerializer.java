@@ -38,7 +38,7 @@ public class TextFileSerializer
     private String serializeWaypointConfig(List<Waypoint> aWaypointConfig)
     {
         String content = aWaypointConfig.size() + "\n";
-        
+
         for (Waypoint waypoint : aWaypointConfig)
         {
             content += waypoint.x + "," + waypoint.y + "," + Math.toDegrees(waypoint.theta) + "\n";
