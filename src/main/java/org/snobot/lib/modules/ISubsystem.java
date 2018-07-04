@@ -6,6 +6,6 @@ package org.snobot.lib.modules;
  * @author Ayush/Ammar
  *
  */
-public interface ISubsystem extends IControllableModule, IUpdateableModule, ILoggableModule, ISmartDashboardUpdaterModule
+public interface ISubsystem extends IControllableModule, IUpdateableModule, ISmartDashboardUpdaterModule
 {
 }

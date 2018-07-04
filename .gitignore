@@ -4,7 +4,7 @@
 .settings/
 
 /temp
-*RobotLog*.csv
+TestLog*.csv
 target/rolling/**
 
 # Eclipse projects

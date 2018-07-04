@@ -3,10 +3,8 @@ package org.snobot.lib;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.snobot.lib.logging.ILogger;
-import org.snobot.lib.logging.Logger;
+import org.snobot.lib.logging.CsvLogger;
 import org.snobot.lib.modules.IControllableModule;
-import org.snobot.lib.modules.ILoggableModule;
 import org.snobot.lib.modules.ISmartDashboardUpdaterModule;
 import org.snobot.lib.modules.ISubsystem;
 import org.snobot.lib.modules.IUpdateableModule;
@@ -20,10 +18,9 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
 
     private final List<IUpdateableModule> mUpdateableModules;
     private final List<IControllableModule> mControllableModules;
-    private final List<ILoggableModule> mLoggableModules;
     private final List<ISmartDashboardUpdaterModule> mSmartDashboardModules;
 
-    private final Logger mLogger; // NOPMD
+    private final CsvLogger mCsvLogger;
 
     // Autonomous
     protected CommandGroup mAutonCommand;
@@ -35,10 +32,9 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
     {
         mUpdateableModules = new ArrayList<>();
         mControllableModules = new ArrayList<>();
-        mLoggableModules = new ArrayList<>();
         mSmartDashboardModules = new ArrayList<>();
 
-        mLogger = new Logger();
+        mCsvLogger = new CsvLogger();
     }
 
     protected void addModule(Object aModule)
@@ -50,10 +46,6 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
         if (aModule instanceof IControllableModule)
         {
             mControllableModules.add((IControllableModule) aModule);
-        }
-        if (aModule instanceof ILoggableModule)
-        {
-            mLoggableModules.add((ILoggableModule) aModule);
         }
         if (aModule instanceof ISmartDashboardUpdaterModule)
         {
@@ -68,8 +60,7 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
         Scheduler.getInstance().run();
 
         update();
-        updateSmartDashboard();
-        updateLog();
+        mCsvLogger.writeRow();
 
     }
 
@@ -90,6 +81,12 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
     }
 
     @Override
+    public void robotPeriodic()
+    {
+        updateSmartDashboard();
+    }
+
+    @Override
     public void teleopInit()
     {
         if (mAutonCommand != null)
@@ -104,32 +101,13 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
     {
         update();
         control();
-        updateSmartDashboard();
-        updateLog();
+        mCsvLogger.writeRow();
     }
 
     @Override
     public void disabledInit()
     {
-        mLogger.flush();
-    }
-
-    @Override
-    public void disabledPeriodic()
-    {
-        updateSmartDashboard();
-    }
-
-    @Override
-    public void initializeLogHeaders()
-    {
-        mLogger.initializeLogger();
-        for (ILoggableModule subsystem : mLoggableModules)
-        {
-            subsystem.initializeLogHeaders();
-        }
-        mLogger.endHeader();
-        mAutonCommand = createAutonomousCommand();
+        mCsvLogger.flush();
     }
 
     @Override
@@ -138,7 +116,6 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
         for (IUpdateableModule subsystem : mUpdateableModules)
         {
             subsystem.update();
-
         }
     }
 
@@ -149,22 +126,6 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
         {
             subsystem.control();
         }
-    }
-
-    @Override
-    public void updateLog()
-    {
-        if (mLogger.logNow())
-        {
-            mLogger.startRow();
-
-            for (ILoggableModule subsystem : mLoggableModules)
-            {
-                subsystem.updateLog();
-            }
-            mLogger.endRow();
-        }
-
     }
 
     @Override
@@ -183,11 +144,6 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
         {
             subsystem.stop();
         }
-    }
-
-    protected ILogger getLogger()
-    {
-        return mLogger;
     }
 
     protected abstract CommandGroup createAutonomousCommand();

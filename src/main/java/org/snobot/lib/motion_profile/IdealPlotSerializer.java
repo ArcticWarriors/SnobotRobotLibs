@@ -1,5 +1,6 @@
 package org.snobot.lib.motion_profile;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -18,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 public final class IdealPlotSerializer
 {
     private static final Logger sLOGGER = LogManager.getLogger(IdealPlotSerializer.class);
+    private static final DecimalFormat sDF = new DecimalFormat("#.####");
 
     /**
      * Constructor, private because they should be using the static functions.
@@ -43,7 +45,10 @@ public final class IdealPlotSerializer
         while (tokenizer.hasMoreElements())
         {
             PathSetpoint point = deserializePathPoint(tokenizer);
-            points.add(point);
+            if (point != null)
+            {
+                points.add(point);
+            }
         }
 
         return points;
@@ -80,7 +85,7 @@ public final class IdealPlotSerializer
      */
     public static String serializePathPoint(PathSetpoint aPoint)
     {
-        return aPoint.mPosition + "," + aPoint.mVelocity + ",";
+        return sDF.format(aPoint.mPosition) + "," + sDF.format(aPoint.mVelocity) + ",";
     }
 
     /**
@@ -93,18 +98,20 @@ public final class IdealPlotSerializer
      */
     public static PathSetpoint deserializePathPoint(StringTokenizer aTokenizer)
     {
-        PathSetpoint point = new PathSetpoint();
 
         try
         {
+            PathSetpoint point = new PathSetpoint();
             point.mPosition = Double.parseDouble(aTokenizer.nextToken());
             point.mVelocity = Double.parseDouble(aTokenizer.nextToken());
+
+            return point;
         }
         catch (Exception ex)
         {
             sLOGGER.log(Level.ERROR, "", ex);
         }
 
-        return point;
+        return null;
     }
 }
