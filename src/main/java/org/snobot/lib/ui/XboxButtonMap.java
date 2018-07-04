@@ -7,7 +7,7 @@ package org.snobot.lib.ui;
  * @author ayush_000
  *
  */
-public class XboxButtonMap
+public final class XboxButtonMap
 {
 
     // Axis
@@ -36,4 +36,9 @@ public class XboxButtonMap
     public static final int D_PAD_DOWN = 180;
     public static final int D_PAD_LEFT = 270;
     public static final int D_PAD_NULL = -1;
+
+    private XboxButtonMap()
+    {
+
+    }
 }

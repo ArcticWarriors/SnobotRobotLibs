@@ -69,7 +69,7 @@ public class PathGenerator
             pos = aPosition - .5 * aMaxAccel * Math.pow(t - t2, 2);
             vel = maxVelocity - aMaxAccel * (t - t1);
 
-            PathSetpoint point = new PathSetpoint(TrapezoidSegment.Acceleration, aDt, pos, vel, aMaxAccel);
+            PathSetpoint point = new PathSetpoint(TrapezoidSegment.Deceleration, aDt, pos, vel, aMaxAccel);
             output.add(point);
         }
 

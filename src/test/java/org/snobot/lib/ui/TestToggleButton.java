@@ -31,5 +31,11 @@ public class TestToggleButton
         // Continue to press it for multiple loops, should remain false
         Assertions.assertFalse(btn.update(true));
         Assertions.assertFalse(btn.getState());
+
+        // Force it high
+        btn.setState(true);
+        Assertions.assertTrue(btn.getState());
+        Assertions.assertFalse(btn.update(true));
+        Assertions.assertFalse(btn.getState());
     }
 }

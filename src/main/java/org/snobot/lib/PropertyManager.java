@@ -2,8 +2,13 @@ package org.snobot.lib;
 
 import edu.wpi.first.wpilibj.Preferences;
 
-public class PropertyManager
+public final class PropertyManager // NOPMD
 {
+    private PropertyManager()
+    {
+
+    }
+
     public abstract static class IProperty<Type>
     {
         protected String mKey;
