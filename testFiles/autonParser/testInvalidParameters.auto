@@ -1,0 +1,6 @@
+# This will test the argument parsing
+
+TestCommandA 1 3
+
+TestCommandA 1 3 1.f4
+

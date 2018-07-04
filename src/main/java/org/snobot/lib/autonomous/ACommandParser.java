@@ -1,8 +1,10 @@
 package org.snobot.lib.autonomous;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -10,18 +12,22 @@ import java.util.StringTokenizer;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.snobot.lib.ASnobot;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.WaitCommand;
 
-public abstract class ACommandParser
+public class ACommandParser<RobotType extends ASnobot>
 {
     protected static final Logger sLOGGER = LogManager.getLogger(ACommandParser.class);
 
-    protected final NetworkTableEntry mAutonSdTableTextName;
-    protected final NetworkTableEntry mAutonSdTableParsedTextName;
+    protected final NetworkTableEntry mNetworkTableEntryCommandText;
+    protected final NetworkTableEntry mNetworkTableEntryParsingSuccess;
+    protected final NetworkTableEntry mNetworkTableEntryFilename;
+    protected final AAutonomousCommandFactory<RobotType> mCommandFactory;
+    protected final RobotType mSnobot;
 
     protected final String mDelimiter;
     protected final String mCommentStart;
@@ -43,16 +49,27 @@ public abstract class ACommandParser
      *            The characters representing a line comment start
      */
     public ACommandParser(
-            NetworkTableEntry aAutonSdTableTextName, NetworkTableEntry aAutonSdTableParsedTextName,
-            String aDelimiter, String aCommentStart)
+            NetworkTableEntry aAutonSdTableTextName, 
+            NetworkTableEntry aAutonSdTableParsedTextName,
+            NetworkTableEntry aNetworkTableEntryFilename,
+            String aDelimiter, String aCommentStart,
+            String aWaitCommandName, String aParallelCommandName,
+            AAutonomousCommandFactory<RobotType> aCommandFactory,
+            RobotType aSnobot)
     {
-        mAutonSdTableTextName = aAutonSdTableTextName;
-        mAutonSdTableParsedTextName = aAutonSdTableParsedTextName;
+        mNetworkTableEntryCommandText = aAutonSdTableTextName;
+        mNetworkTableEntryParsingSuccess = aAutonSdTableParsedTextName;
+        mNetworkTableEntryFilename = aNetworkTableEntryFilename;
+        mCommandFactory = aCommandFactory;
+        mSnobot = aSnobot;
         mDelimiter = aDelimiter;
         mCommentStart = aCommentStart;
 
         mErrorText = "";
         mSuccess = false;
+
+        aCommandFactory.registerCreator(aWaitCommandName, this::parseWaitCommand);
+        aCommandFactory.registerCreator(aParallelCommandName, this::parseParallelCommand);
     }
 
     protected void addError(String aError)
@@ -144,7 +161,7 @@ public abstract class ACommandParser
      *            The list of arguments
      * @return The command group for the parallel command
      */
-    protected CommandGroup parseParallelCommand(List<String> aArgs)
+    protected CommandGroup parseParallelCommand(List<String> aArgs, RobotType aRobotType)
     {
         StringBuilder parallelLine = new StringBuilder();
         for (int i = 1; i < aArgs.size(); ++i)
@@ -163,7 +180,7 @@ public abstract class ACommandParser
         return parallelCommands;
     }
 
-    protected Command parseWaitCommand(List<String> aArgs)
+    protected Command parseWaitCommand(List<String> aArgs, RobotType aRobotType)
     {
         double time = Double.parseDouble(aArgs.get(1));
         return new WaitCommand(time);
@@ -179,6 +196,7 @@ public abstract class ACommandParser
     public CommandGroup readFile(String aFilePath)
     {
         sLOGGER.log(Level.INFO, "Loading autonomous " + aFilePath);
+        mNetworkTableEntryFilename.setString(aFilePath);
         initReading();
 
         CommandGroup output = createNewCommandGroup(aFilePath);
@@ -225,8 +243,8 @@ public abstract class ACommandParser
             aCommandString += mErrorText;
         }
 
-        mAutonSdTableTextName.setString(aCommandString);
-        mAutonSdTableParsedTextName.setBoolean(mSuccess);
+        mNetworkTableEntryCommandText.setString(aCommandString);
+        mNetworkTableEntryParsingSuccess.setBoolean(mSuccess);
     }
 
     public boolean wasParsingSuccesful()
@@ -234,5 +252,59 @@ public abstract class ACommandParser
         return mSuccess;
     }
 
-    protected abstract Command parseCommand(List<String> aArgs);
+    /**
+     * Saves the autonomous mode to the RoboRio.
+     */
+    public void saveAutonMode()
+    {
+        String newText = mNetworkTableEntryCommandText.getString("");
+        String filename = mNetworkTableEntryFilename.getString("auton_file.txt");
+
+        sLOGGER.log(Level.INFO, "\n" 
+                + "*****************************************\n" 
+                + "Saving auton mode to " + filename + "\n"
+                + "*****************************************");
+
+        try
+        {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(filename)));
+            bw.write(newText);
+            bw.close();
+        }
+        catch (Exception ex)
+        {
+            sLOGGER.log(Level.INFO, ex);
+        }
+    }
+
+    /**
+     * Takes a list of Strings and creates a Command.
+     * 
+     * @param args
+     *            The command's name and parameters.
+     */
+    protected Command parseCommand(List<String> aCommandArgs)
+    {
+        String commandName = aCommandArgs.get(0);
+        Command newCommand = null;
+        try
+        {
+            // Subsystems from AuotonomousoCommandCreator
+            newCommand = mCommandFactory.createCommand(commandName, aCommandArgs, mSnobot);
+            if (null == newCommand)
+            {
+                addError("Received unexpected command name '" + commandName + "'");
+            }
+        }
+        catch (IndexOutOfBoundsException ex)
+        {
+            addError("You have not specified enough aguments for the command: " + commandName + ". " + ex.getMessage());
+        }
+        catch (Exception ex)
+        {
+            addError("Failed to parse the command: " + commandName + ". " + ex.getMessage());
+            sLOGGER.log(Level.ERROR, "Failed to parse the command: " + commandName + ". ", ex);
+        }
+        return newCommand;
+    }
 }
