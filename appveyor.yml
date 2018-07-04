@@ -28,5 +28,6 @@ after_build:
 - cmd: dir
 - cmd: dir 
 - cmd: dir build\reports
-- cmd: dir build\reports\test
+- cmd: dir build\reports\jacoco
+- cmd: dir build\reports\jacoco\test
 - cmd: codecov -f "SnobotRobotLibs/build/reports/jacoco/test/jacocoTestReport.xml"
