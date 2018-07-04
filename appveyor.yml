@@ -27,4 +27,4 @@ after_build:
 - cmd: pip install codecov
 - cmd: dir
 - cmd: dir reports
-- cmd: codecov -f "build/reports/jacoco/test/jacocoTestReport.xml"
+- cmd: codecov -f "SnobotRobotLibs/build/reports/jacoco/test/jacocoTestReport.xml"
