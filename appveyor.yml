@@ -26,5 +26,7 @@ after_build:
 - cmd: "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
 - cmd: pip install codecov
 - cmd: dir
-- cmd: dir reports
+- cmd: dir SnobotRobotLibs
+- cmd: dir SnobotRobotLibs\build\reports
+- cmd: dir SnobotRobotLibs\build\reports\test
 - cmd: codecov -f "SnobotRobotLibs/build/reports/jacoco/test/jacocoTestReport.xml"
