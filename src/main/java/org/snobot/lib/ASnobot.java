@@ -31,8 +31,8 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
 
     // Queried when the robot is disabled. Used to tag log files as "real" when
     // connected to FMS
-    private int mLastMatchNumber;
-    private MatchType mLastMatchType;
+    protected int mLastMatchNumber;
+    protected MatchType mLastMatchType;
 
     /**
      * Constructor.
@@ -44,6 +44,11 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
         mSmartDashboardModules = new ArrayList<>();
 
         mCsvLogger = new CsvLogger();
+    }
+
+    public CsvLogger getLogger()
+    {
+        return mCsvLogger;
     }
 
     protected void addModule(Object aModule)
