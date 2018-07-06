@@ -2,13 +2,17 @@ package org.snobot.lib;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import org.apache.logging.log4j.LogManager;
 import org.snobot.lib.logging.CsvLogger;
 import org.snobot.lib.modules.IControllableModule;
 import org.snobot.lib.modules.ISmartDashboardUpdaterModule;
 import org.snobot.lib.modules.ISubsystem;
 import org.snobot.lib.modules.IUpdateableModule;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.MatchType;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -25,6 +29,11 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
     // Autonomous
     protected CommandGroup mAutonCommand;
 
+    // Queried when the robot is disabled. Used to tag log files as "real" when
+    // connected to FMS
+    protected int mLastMatchNumber;
+    protected MatchType mLastMatchType;
+
     /**
      * Constructor.
      */
@@ -35,6 +44,11 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
         mSmartDashboardModules = new ArrayList<>();
 
         mCsvLogger = new CsvLogger();
+    }
+
+    public CsvLogger getLogger()
+    {
+        return mCsvLogger;
     }
 
     protected void addModule(Object aModule)
@@ -111,6 +125,21 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
     }
 
     @Override
+    public void disabledPeriodic()
+    {
+        MatchType matchType = DriverStation.getInstance().getMatchType();
+        int matchNumber = DriverStation.getInstance().getMatchNumber();
+
+        if (matchType != MatchType.None && (matchNumber != mLastMatchNumber || !Objects.equals(matchType, mLastMatchType)))
+        {
+            mLastMatchNumber = matchNumber;
+            mLastMatchType = matchType;
+
+            relaunchLogging();
+        }
+    }
+
+    @Override
     public void update()
     {
         for (IUpdateableModule subsystem : mUpdateableModules)
@@ -144,6 +173,16 @@ public abstract class ASnobot extends IterativeRobot implements ISubsystem
         {
             subsystem.stop();
         }
+    }
+
+    protected void relaunchLogging()
+    {
+        String fileName = mLastMatchType + "Match" + mLastMatchNumber;
+        System.out.println("Resetting the log file to " + fileName); // NOPMD
+        System.setProperty("logFilename", fileName);
+
+        org.apache.logging.log4j.core.LoggerContext ctx = (org.apache.logging.log4j.core.LoggerContext) LogManager.getContext(false);
+        ctx.reconfigure();
     }
 
     protected abstract CommandGroup createAutonomousCommand();
