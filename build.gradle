@@ -1,118 +1,42 @@
-buildscript {
-    repositories {
-        mavenLocal()
-        jcenter()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-}
-
+// Note 'apply false' for each plugin. This ensures they aren't applied to the root project (here),
+// but it makes the plugins available for subprojects.
 plugins {
-    id "java"
-    id "eclipse"
-    id "idea"
-    id "jacoco"
-    id "checkstyle"
-    id "pmd"
-    id "findbugs"
-    id "jaci.openrio.gradle.GradleRIO" version "2018.03.06"
-    id "com.snobot.simulator.plugin.SnobotSimulatorPlugin" version "2018-1.0.0"
+    id "jaci.openrio.gradle.GradleRIO" version "2018.03.06" apply false
+    id "com.snobot.simulator.plugin.SnobotSimulatorPlugin" version "2018-1.0.0" apply false
 }
 
-apply plugin: com.snobot.simulator.plugin.SnobotSimulatorPlugin
-snobotSimVersions {
-    snobotSimVersion = "2018-1.0.0"
-}
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
+allprojects
+{
+    apply plugin: "eclipse"
+    apply plugin: "checkstyle"
+    apply plugin: "pmd"
+    apply plugin: "findbugs"
 
-sourceSets {
-    main {
-        java {
-            srcDirs += ["CheesyPoofsLibs"]
+    repositories {
+        mavenCentral()
+    }
+    
+    checkstyle {
+        toolVersion = "8.1"
+        configFile = new File(rootDir, "styleguide/checkstyle.xml")
+    }
+    
+    pmd {
+        consoleOutput  = true
+        reportsDir = file("${project.buildDir}/reports/pmd")
+        ruleSetFiles = files(file("$rootDir/styleguide/pmd-ruleset.xml"))
+        ruleSets = []
+    }
+    
+    findbugs {
+        excludeFilter = file("$rootDir/styleguide/findbugs_suppressions.xml")
+        effort = "max"
+    }
+    tasks.withType(FindBugs) {
+        reports {
+            xml.enabled false
+            html.enabled true
         }
     }
-}
-
-dependencies {
-
-    compile wpilib()
-    compile ctre()
-    
-    compile 'org.apache.logging.log4j:log4j-api:2.11.0'
-    compile 'org.apache.logging.log4j:log4j-core:2.11.0'
-    
-    // Third Party without maven
-    compile files('dependencies/RIOdroid.jar')
-    
-    // Simulator
-    testCompile snobotSimCompile()
-    testCompile snobotSimJavaCompile()
-    
-    testCompile 'org.junit.jupiter:junit-jupiter-params:5.2.0'
-    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.2.0'
-}
-
-test {
-    useJUnitPlatform()
-    testLogging {
-        events "failed"
-        exceptionFormat "full"
-    }
-    ignoreFailures = org.gradle.internal.os.OperatingSystem.current().isMacOsX()
-}
-
-//////////////////////////////
-// Style/Formatting stuff
-checkstyle {
-    toolVersion = "8.1"
-    configFile = new File(rootDir, "styleguide/checkstyle.xml")
-}
-
-pmd {
-    consoleOutput  = true
-    reportsDir = file("${project.buildDir}/reports/pmd")
-    ruleSetFiles = files(file("$rootDir/styleguide/pmd-ruleset.xml"))
-    ruleSets = []
-}
-
-findbugs {
-    excludeFilter = file("$rootDir/styleguide/findbugs_suppressions.xml")
-    effort = "max"
-}
-tasks.withType(FindBugs) {
-    reports {
-        xml.enabled false
-        html.enabled true
-    }
-}
-//////////////////////////////
-
-jacocoTestReport {
-    reports {
-        xml.enabled true
-        html.enabled true
-    }
-    
-    afterEvaluate {
-        classDirectories = files(classDirectories.files.collect {
-            fileTree(dir: it,  exclude: 
-                [
-                'com/team254/lib/trajectory/**',
-                'com/snobot/lib/motion_profile/**',
-                'com/snobot/lib/vision/**',
-                'com/snobot/lib/external_connection/**',
-                'com/snobot/lib/adb/**',
-                ])
-        })
-    }
-}
-
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.7'
 }

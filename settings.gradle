@@ -1,0 +1,6 @@
+rootProject.name="SnobotRobotLibs"
+
+include 'SnobotRobotLibsCore'
+include 'SnobotRobotLibsAndroid'
+include 'SnobotRobotLibsVision'
+include 'CheesyPoofsLibs'

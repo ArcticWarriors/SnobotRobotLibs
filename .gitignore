@@ -1,9 +1,9 @@
-/bin/
-/build
+bin/
+build
 .gradle/
 .settings/
 
-/temp
+temp
 TestLog*.csv
 target/rolling/**
 logs/
